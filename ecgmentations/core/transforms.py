@@ -1,3 +1,4 @@
+import cv2
 import random
 
 from ecgmentations.core.utils import format_args, get_shortest_class_fullname
@@ -89,3 +90,16 @@ class IdentityTransform(EcgOnlyTransform):
 
     def get_transform_init_args_names(self):
         return tuple()
+
+class DualTransform(Transform):
+    """Transform for segmentation task."""
+
+    @property
+    def targets(self) -> Dict[str, Callable]:
+        return {
+            'image': self.apply,
+            'mask': self.apply_to_mask,
+        }
+
+    def apply_to_mask(self, ecg, **params):
+        return self.apply(ecg, **{k: cv2.INTER_NEAREST if k == 'interpolation' else v for k, v in params.items()})
