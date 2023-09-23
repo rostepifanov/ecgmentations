@@ -4,7 +4,7 @@ INSTALL_REQUIRES = ['numpy>=1.24.4']
 
 setuptools.setup(
     name='ecgmentations',
-    version='0.0.0',
+    version='0.0.1',
     description='',
     long_description=''
     author='Epifanov Rostislav',
