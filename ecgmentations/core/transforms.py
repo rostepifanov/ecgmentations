@@ -1,46 +1,46 @@
 import cv2
-import random
+import numpy as np
 
 from ecgmentations.core.utils import format_args, get_shortest_class_fullname
 
 class Transform(object):
-    def __init__(self, always_apply = False, p = 0.5):
+    def __init__(self, always_apply=False, p=0.5):
         self.p = p
         self.always_apply = always_apply
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, force_apply = False, **data):
         if args:
             raise KeyError('You have to pass data to augmentations as named arguments, for example: aug(ecg=ecg)')
 
-        if (random.random() < self.p) or self.always_apply:
+        if force_apply or self.always_apply or (np.random.random() < self.p):
             params = self.get_params()
 
-            return self.apply_with_params(params, **kwargs)
+            return self.apply_with_params(params, **data)
 
-        return kwargs
+        return data
 
-    def apply_with_params(self, params, **kwargs):
+    def apply_with_params(self, params, **data):
         if params is None:
-            return kwargs
+            return data
 
-        res = {}
+        pdata = {}
 
-        for key, arg in kwargs.items():
-            if arg is not None:
-                target_function = self._get_target_function(key)
-                res[key] = target_function(arg, **params)
+        for name, datum in data.items():
+            if datum is not None:
+                target_function = self._get_target_function(name)
+                pdata[name] = target_function(datum, **params)
             else:
-                res[key] = None
+                pdata[name] = None
 
-        return res
+        return pdata
 
     def __repr__(self):
         state = self.get_base_init_args()
         state.update(self.get_transform_init_args())
         return '{name}({args})'.format(name=self.__class__.__name__, args=format_args(state))
 
-    def _get_target_function(self, key):
-        target_function = self.targets.get(key, lambda x, **p: x)
+    def _get_target_function(self, name):
+        target_function = self.targets.get(name, lambda x, **p: x)
         return target_function
 
     def get_params(self):
@@ -82,20 +82,11 @@ class EcgOnlyTransform(Transform):
     def targets(self):
         return { 'ecg': self.apply }
 
-class IdentityTransform(EcgOnlyTransform):
-    """Dummy transform"""
-
-    def apply(self, ecg, **params):
-        return ecg
-
-    def get_transform_init_args_names(self):
-        return tuple()
-
 class DualTransform(Transform):
     """Transform for segmentation task."""
 
     @property
-    def targets(self) -> Dict[str, Callable]:
+    def targets(self):
         return {
             'image': self.apply,
             'mask': self.apply_to_mask,
@@ -103,3 +94,12 @@ class DualTransform(Transform):
 
     def apply_to_mask(self, ecg, **params):
         return self.apply(ecg, **{k: cv2.INTER_NEAREST if k == 'interpolation' else v for k, v in params.items()})
+
+class Identity(DualTransform):
+    """Identity transform"""
+
+    def apply(self, ecg, **params):
+        return ecg
+
+    def get_transform_init_args_names(self):
+        return tuple()
