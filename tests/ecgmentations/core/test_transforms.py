@@ -2,18 +2,22 @@ import pytest
 
 import numpy as np
 
-from ecgmentations.core.transforms import IdentityTransform
+from ecgmentations.core.transforms import Identity
 
 
-def test_IdentityTransform_CASE_repr():
-    transform = IdentityTransform(always_apply=True)
+def test_Identity_CASE_repr():
+    transform = Identity(always_apply=True)
 
-    str(transform)
+    repr = str(transform)
 
-def test_IdentityTransform_CASE_apply():
+    assert 'Identity' in repr
+    assert 'always_apply' in repr
+    assert 'p' in repr
+
+def test_Identity_CASE_call():
     ecg = np.ones((12, 5000))
 
-    transform = IdentityTransform(always_apply=True)
+    transform = Identity(always_apply=True)
 
     output = transform(ecg=ecg)['ecg']
     expected = ecg
