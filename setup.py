@@ -4,9 +4,9 @@ INSTALL_REQUIRES = ['numpy>=1.24.4', 'opencv-python>=4.8.0.76']
 
 setuptools.setup(
     name='ecgmentations',
-    version='0.0.1',
+    version='0.0.3',
     description='',
-    long_description=''
+    long_description='',
     author='Epifanov Rostislav',
     license='MIT',
     url='https://github.com/rostepifanov/egcmentations',
