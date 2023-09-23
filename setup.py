@@ -1,10 +1,12 @@
 import setuptools
 
+from ecgmentations.__version__ import __version__
+
 INSTALL_REQUIRES = ['numpy>=1.20.0', 'opencv-python-headless>=4.1.1']
 
 setuptools.setup(
     name='ecgmentations',
-    version='0.0.3',
+    version=__version__,
     description='',
     long_description='',
     author='Epifanov Rostislav',
