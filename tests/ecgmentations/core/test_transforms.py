@@ -1,12 +1,10 @@
 import pytest
 
 import numpy as np
-
-from ecgmentations.core.transforms import Identity
-
+import ecgmentations as E
 
 def test_Identity_CASE_repr():
-    transform = Identity(always_apply=True)
+    transform = E.Identity(always_apply=True)
 
     repr = str(transform)
 
@@ -17,7 +15,7 @@ def test_Identity_CASE_repr():
 def test_Identity_CASE_call():
     ecg = np.ones((12, 5000))
 
-    transform = Identity(always_apply=True)
+    transform = E.Identity(always_apply=True)
 
     output = transform(ecg=ecg)['ecg']
     expected = ecg
