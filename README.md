@@ -15,7 +15,7 @@ Ecgmentations is a Python library for ecg augmentation. Ecg augmentation is used
 Albumentations requires Python 3.7 or higher. To install the latest version from PyPI:
 
 ```
-pip install -U albumentations
+pip install -U ecgmentations
 ```
 
 ## A simple example
