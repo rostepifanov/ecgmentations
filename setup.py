@@ -1,6 +1,6 @@
 import setuptools
 
-INSTALL_REQUIRES = ['numpy>=1.24.4']
+INSTALL_REQUIRES = ['numpy>=1.24.4', 'opencv-python>=4.8.0.76']
 
 setuptools.setup(
     name='ecgmentations',
