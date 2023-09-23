@@ -8,3 +8,9 @@ def invert(ecg):
 
 def channel_shuffle(ecg, channel_order):
     return ecg[:, channel_order]
+
+def channel_dropout(ecg, channels_to_drop, fill_value):
+    ecg = np.array(ecg)
+    ecg[:, channels_to_drop] = fill_value
+
+    return ecg
