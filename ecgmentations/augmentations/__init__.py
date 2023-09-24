@@ -1,1 +1,7 @@
-from ecgmentations.augmentations.transforms import Flip, Invert, ChannelShuffle, ChannelDropout
+from ecgmentations.augmentations.transforms import (
+    Flip,
+    Invert,
+    ChannelShuffle,
+    ChannelDropout,
+    GaussNoise,
+)

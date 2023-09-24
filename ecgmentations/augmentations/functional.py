@@ -14,3 +14,6 @@ def channel_dropout(ecg, channels_to_drop, fill_value):
     ecg[:, channels_to_drop] = fill_value
 
     return ecg
+
+def gauss_noise(ecg, gauss):
+    return ecg + gauss
