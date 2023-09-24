@@ -1,6 +1,6 @@
 import numpy as np
 
-def flip(ecg):
+def reverse(ecg):
     return np.flip(ecg, axis=0)
 
 def invert(ecg):

@@ -3,11 +3,11 @@ import ecgmentations.augmentations.functional as F
 
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
 
-class Flip(DualTransform):
-    """Flip the input ecg.
+class Reverse(DualTransform):
+    """Reverse the input ecg.
     """
     def apply(self, ecg, **params):
-        return F.flip(ecg)
+        return F.reverse(ecg)
 
     def get_transform_init_args_names(self):
         return tuple()

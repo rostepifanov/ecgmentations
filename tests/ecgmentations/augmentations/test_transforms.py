@@ -4,7 +4,7 @@ import numpy as np
 import ecgmentations as E
 
 TRANSFORMS = [
-    E.Flip,
+    E.Reverse,
     E.Invert,
     E.ChannelShuffle,
     E.ChannelDropout,

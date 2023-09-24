@@ -1,5 +1,5 @@
 from ecgmentations.augmentations.transforms import (
-    Flip,
+    Reverse,
     Invert,
     ChannelShuffle,
     ChannelDropout,
