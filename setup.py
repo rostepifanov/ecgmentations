@@ -2,9 +2,14 @@ import setuptools
 
 from pathlib import Path
 
-from ecgmentations.__version__ import __version__
-
 INSTALL_REQUIRES = ['numpy>=1.20.0', 'opencv-python-headless>=4.1.1']
+
+def get_version():
+    locals_ = dict()
+
+    with open(Path(__file__).parent / 'ecgmentations' / '__version__.py') as f:
+        exec(f.read(), globals(), locals_)
+        return locals_['__version__']
 
 def get_long_description():
     with open(Path(__file__).parent / 'README.md', encoding='utf-8') as f:
@@ -12,7 +17,7 @@ def get_long_description():
 
 setuptools.setup(
     name='ecgmentations',
-    version=__version__,
+    version=get_version(),
     description='Ecg augmentation library and easy to use wrapper around other libraries',
     long_description=get_long_description(),
     long_description_content_type='text/markdown',
