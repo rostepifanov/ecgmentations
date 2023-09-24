@@ -12,15 +12,35 @@ Ecgmentations is a Python library for ecg augmentation. Ecg augmentation is used
 [**Rostislav Epifanov** — Researcher at Novosibirsk State University]()
 
 ## Installation
-Albumentations requires Python 3.7 or higher. To install the latest version from PyPI:
+Installation from PyPI:
 
 ```
-pip install -U ecgmentations
+$ pip install ecgmentations
+```
+
+Installation from GitHub:
+
+```
+$ pip install git+https://github.com/rostepifanov/ecgmentations
 ```
 
 ## A simple example
 ```python
-...
+import numpy as np
+import ecgmentations as E
+
+# Declare an augmentation pipeline
+transform = E.Sequential([
+    E.Reverse(p=0.5),
+    E.ChannelShuffle(p=0.06),
+])
+
+# Create example ecg
+ecg = np.ones((12, 5000)).T
+
+# Augment an ecg
+transformed = transform(ecg=ecg)
+transformed_ecg = transformed['ecg']
 ```
 
 # Citing

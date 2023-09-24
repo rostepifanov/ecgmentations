@@ -13,7 +13,7 @@ def test_Identity_CASE_repr():
     assert 'p' in repr
 
 def test_Identity_CASE_call():
-    ecg = np.ones((12, 5000))
+    ecg = np.ones((12, 5000)).T
 
     transform = E.Identity(always_apply=True)
 
