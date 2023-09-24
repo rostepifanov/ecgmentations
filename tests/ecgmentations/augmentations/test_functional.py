@@ -1,8 +1,7 @@
 import pytest
 
 import numpy as np
-
-from ecgmentations.augmentations import functional as F
+import ecgmentations.augmentations.functional as F
 
 def test_reverse_CASE_default():
     ecg = np.array([[1, 2, 3, 4, 5, 6], ]).T

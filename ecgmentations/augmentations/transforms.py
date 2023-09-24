@@ -1,6 +1,6 @@
 import numpy as np
+import ecgmentations.augmentations.functional as F
 
-from ecgmentations.augmentations import functional as F
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
 
 class Reverse(DualTransform):
