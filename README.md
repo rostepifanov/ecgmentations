@@ -15,13 +15,13 @@ Ecgmentations is a Python library for ecg augmentation. Ecg augmentation is used
 Installation from PyPI:
 
 ```
-$ pip install ecgmentations
+pip install ecgmentations
 ```
 
 Installation from GitHub:
 
 ```
-$ pip install git+https://github.com/rostepifanov/ecgmentations
+pip install git+https://github.com/rostepifanov/ecgmentations
 ```
 
 ## A simple example
