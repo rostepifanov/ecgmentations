@@ -15,6 +15,16 @@ class Transform(object):
         if force_apply or self.always_apply or (np.random.random() < self.p):
             params = self.get_params()
 
+            if self.targets_as_params:
+                assert all(name in data for name in self.targets_as_params), '{} requires {}'.format(
+                    self.__class__.__name__, self.targets_as_params
+                )
+
+                targets_as_params = {name: data[name] for name in self.targets_as_params}
+
+                params_dependent_on_targets = self.get_params_dependent_on_targets(targets_as_params)
+                params.update(params_dependent_on_targets)
+
             return self.apply_with_params(params, **data)
 
         return data
@@ -55,6 +65,15 @@ class Transform(object):
             for example: ('egc', ) or ('egc', 'mask')
         """
         raise NotImplementedError
+
+    @property
+    def targets_as_params(self):
+        return []
+
+    def get_params_dependent_on_targets(self, params):
+        raise NotImplementedError(
+            'Method get_params_dependent_on_targets is not implemented in class {name}'.format(name=self.__class__.__name__)
+        )
 
     @classmethod
     def get_class_fullname(cls):
