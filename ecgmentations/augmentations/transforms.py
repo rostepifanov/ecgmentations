@@ -4,7 +4,7 @@ import ecgmentations.augmentations.functional as F
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
 
 class Flip(DualTransform):
-    """Flip ecg.
+    """Flip the input ecg.
     """
     def apply(self, ecg, **params):
         return F.flip(ecg)
@@ -13,7 +13,7 @@ class Flip(DualTransform):
         return tuple()
 
 class Invert(EcgOnlyTransform):
-    """Invert ecg.
+    """Invert the input ecg.
     """
     def apply(self, ecg, **params):
         return F.invert(ecg)
@@ -44,12 +44,17 @@ class ChannelDropout(EcgOnlyTransform):
     """Randomly drop channels in the input ecg.
     """
     def __init__(
-        self,
-        channel_drop_range=(1, 1),
-        fill_value=0,
-        always_apply=False,
-        p=0.5,
-    ):
+            self,
+            channel_drop_range=(1, 1),
+            fill_value=0,
+            always_apply=False,
+            p=0.5
+        ):
+        """
+            :args:
+                channel_drop_range ((int, int)): range for select the number of dropping channels
+                fill_value (int) : fill value for dropped channels
+        """
         super(ChannelDropout, self).__init__(always_apply, p)
 
         self.channel_drop_range = channel_drop_range
@@ -85,3 +90,51 @@ class ChannelDropout(EcgOnlyTransform):
 
     def get_transform_init_args_names(self):
         return ('channel_drop_range', 'fill_value')
+
+class GaussNoise(EcgOnlyTransform):
+    """Randomly add gauss noise to the input ecg.
+    """
+    def __init__(
+            self,
+            mean=0.,
+            variance=0.01,
+            per_channel=True,
+            always_apply=False,
+            p=0.5
+        ):
+        """
+            :NOTE:
+                default values is taken for paper "Self-supervised representation learning from 12-lead ECG data"
+
+            :args:
+                mean (float): mean of gauss noise
+                variance (float): variance of gauss noise
+                per_channel (bool) : if set to True, noise will be sampled for each channel independently
+        """
+        super(GaussNoise, self).__init__(always_apply, p)
+
+        self.mean = mean
+        self.variance = variance
+        self.per_channel = per_channel
+
+        if variance < 0:
+            raise ValueError('variance should be non negative.')
+
+    def apply(self, ecg, gauss, **params):
+        return F.gauss_noise(ecg, gauss=gauss)
+
+    @property
+    def targets_as_params(self):
+        return ['ecg']
+
+    def get_params_dependent_on_targets(self, params):
+        if self.per_channel:
+            gauss = np.random.normal(self.mean, self.variance**0.5, params['ecg'].shape)
+        else:
+            gauss = np.random.normal(self.mean, self.variance**0.5, params['ecg'].shape[:-1])
+            gauss = np.expand_dims(gauss, axis=-1)
+
+        return {'gauss': gauss}
+
+    def get_transform_init_args_names(self):
+        return ('mean', 'variance', 'per_channel')

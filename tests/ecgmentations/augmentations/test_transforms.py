@@ -8,6 +8,7 @@ TRANSFORMS = [
     E.Invert,
     E.ChannelShuffle,
     E.ChannelDropout,
+    E.GaussNoise,
 ]
 
 @pytest.mark.parametrize('transform', TRANSFORMS)
