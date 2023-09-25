@@ -6,6 +6,7 @@ Ecgmentations is a Python library for ecg augmentation. Ecg augmentation is used
 - [Authors](#authors)
 - [Installation](#installation)
 - [A simple example](#a-simple-example)
+- [List of augmentations](#list-of-augmentations)
 - [Citing](#citing)
 
 ## Authors
@@ -42,6 +43,16 @@ ecg = np.ones((12, 5000)).T
 transformed = transform(ecg=ecg)
 transformed_ecg = transformed['ecg']
 ```
+
+# List of augmentations
+
+The list of all transforms:
+
+- [Reverse]()
+- [Invert]()
+- [ChannelShuffle]()
+- [ChannelDropout]()
+- [GaussNoise]()
 
 # Citing
 
