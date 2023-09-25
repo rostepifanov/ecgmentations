@@ -107,7 +107,7 @@ class DualTransform(Transform):
     @property
     def targets(self):
         return {
-            'image': self.apply,
+            'ecg': self.apply,
             'mask': self.apply_to_mask,
         }
 
