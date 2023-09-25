@@ -21,9 +21,8 @@ def test_Sequential_CASE_call_AND_one_flip():
     ])
 
     output = transform(ecg=ecg)['ecg']
-    expected = ecg
 
-    assert pytest.approx(output) != expected
+    assert pytest.approx(output) != ecg
 
 def test_Sequential_CASE_call_AND_double_flip():
     ecg = np.random.random((12, 5000))

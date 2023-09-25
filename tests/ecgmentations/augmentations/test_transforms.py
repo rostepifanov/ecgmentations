@@ -23,7 +23,10 @@ def test_Transform_CASE_repr(transform):
 
 @pytest.mark.parametrize('transform', TRANSFORMS)
 def test_Transform_CASE_call(transform):
-    ecg = np.ones((12, 5000)).T
+    ecg = np.random.uniform(size=(12, 5000)).T
+    mask = np.zeros((1, 5000)).T
 
     transform = transform(always_apply=True)
-    output = transform(ecg=ecg)['ecg']
+    output = transform(ecg=ecg, mask=mask)['ecg']
+
+    assert pytest.approx(output) != ecg
