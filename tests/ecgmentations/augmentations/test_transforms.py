@@ -27,6 +27,11 @@ def test_Transform_CASE_call(transform):
     mask = np.zeros((1, 5000)).T
 
     transform = transform(always_apply=True)
-    output = transform(ecg=ecg, mask=mask)['ecg']
+    transformed = transform(ecg=ecg, mask=mask)
 
-    assert pytest.approx(output) != ecg
+    tecg, tmask = transformed['ecg'], transformed['mask']
+
+    assert tecg.shape == ecg.shape
+    assert pytest.approx(tecg) != ecg
+
+    assert tmask.shape == mask.shape
