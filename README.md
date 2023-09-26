@@ -53,6 +53,8 @@ The list of all transforms:
 - [ChannelShuffle]()
 - [ChannelDropout]()
 - [GaussNoise]()
+- [Blur]()
+- [GaussBlur]()
 
 # Citing
 
