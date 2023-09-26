@@ -5,4 +5,5 @@ from ecgmentations.augmentations.transforms import (
     ChannelDropout,
     GaussNoise,
     Blur,
+    GaussianBlur,
 )
