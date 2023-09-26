@@ -184,3 +184,61 @@ class Blur(EcgOnlyTransform):
 
     def get_transform_init_args_names(self):
         return ('kernel_size_range', )
+
+class GaussianBlur(EcgOnlyTransform):
+    """Blur by gaussian the input ecg.
+    """
+    def __init__(
+            self,
+            variance=1.,
+            kernel_size_range=(3, 5),
+            always_apply=False,
+            p=0.5
+        ):
+
+        """
+            :NOTE:
+                transformation is similar to gaussian blur in paper "Self-supervised representation learning from 12-lead ECG data"
+                with variance equals one and kernel size equals
+
+                code kernel is about of (0.05, 0.25, 0.40, 0.25, 0.05)
+                paper kernel is (0.10, 0.20, 0.40, 0.20, 0.10)
+
+            :args:
+                variance (float): variance of gaussian kernel
+                kernel_size_range ((int, int)): range for select kernel size of blur filter
+        """
+        super(GaussianBlur, self).__init__(always_apply, p)
+
+        if variance < 0:
+            raise ValueError('Variance should be non negative.')
+
+        self.variance = variance
+
+        if not (isinstance(kernel_size_range, tuple) and list(map(type, kernel_size_range)) == [int, int]):
+            raise ValueError('Invalive type of kernel_size_range. Must be (int, int), but got {}'.format(kernel_size_range))
+
+        self.kernel_size_range = kernel_size_range
+
+        self.min_kernel_size = kernel_size_range[0]
+        self.max_kernel_size = kernel_size_range[1]
+
+        if self.min_kernel_size % 2 == 0 or self.max_kernel_size % 2 == 0:
+            raise ValueError('Invalid range borders. Must be odd, but got: {}'.format(kernel_size_range))
+
+        if not 1 <= self.min_kernel_size <= self.max_kernel_size:
+            raise ValueError('Invalid kernel_size_range. Got: {}'.format(kernel_size_range))
+
+    def apply(self, ecg, kernel, **params):
+        return F.conv(ecg, kernel, cv2.BORDER_CONSTANT, 0)
+
+    def get_params(self):
+        kernel_size = 2 * np.random.randint(self.min_kernel_size // 2, self.max_kernel_size // 2 + 1) + 1
+
+        kernel = np.exp(-0.5 * np.square(np.arange(-kernel_size, kernel_size+1)) / self.variance)
+        kernel = kernel / np.sum(kernel)
+
+        return {'kernel': kernel}
+
+    def get_transform_init_args_names(self):
+        return ('variance', 'kernel_size_range')

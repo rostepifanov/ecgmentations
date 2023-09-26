@@ -10,6 +10,7 @@ TRANSFORMS = [
     E.ChannelDropout,
     E.GaussNoise,
     E.Blur,
+    E.GaussianBlur,
 ]
 
 @pytest.mark.parametrize('transform', TRANSFORMS)
