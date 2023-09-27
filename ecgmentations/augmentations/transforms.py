@@ -185,13 +185,13 @@ class Blur(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('kernel_size_range', )
 
-class GaussianBlur(EcgOnlyTransform):
+class GaussBlur(EcgOnlyTransform):
     """Blur by gaussian the input ecg.
     """
     def __init__(
             self,
             variance=1.,
-            kernel_size_range=(3, 5),
+            kernel_size_range=(5, 5),
             always_apply=False,
             p=0.5
         ):
@@ -208,7 +208,7 @@ class GaussianBlur(EcgOnlyTransform):
                 variance (float): variance of gaussian kernel
                 kernel_size_range ((int, int)): range for select kernel size of blur filter
         """
-        super(GaussianBlur, self).__init__(always_apply, p)
+        super(GaussBlur, self).__init__(always_apply, p)
 
         if variance < 0:
             raise ValueError('Variance should be non negative.')
