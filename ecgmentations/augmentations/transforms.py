@@ -3,6 +3,7 @@ import numpy as np
 import ecgmentations.augmentations.functional as F
 
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
+from ecgmentations.augmentations.misc import prepare_int_arange, prepare_float_symrange
 
 class Reverse(DualTransform):
     """Reverse the input ecg.
@@ -256,16 +257,10 @@ class AmplitudeScale(EcgOnlyTransform):
         """
         super(AmplitudeScale, self).__init__(always_apply, p)
 
-        if not (isinstance(scaling_range, tuple) and list(map(type, scaling_range)) == [float, float]):
-            raise ValueError('Invalive type of scaling_range. Must be (float, float), but got {}'.format(scaling_range))
+        self.scaling_range = prepare_float_symrange(scaling_range, 'scaling_range')
 
-        self.scaling_range = scaling_range
-
-        self.min_scaling_range = scaling_range[0]
-        self.max_scaling_range = scaling_range[1]
-
-        if not self.scaling_range <= self.scaling_range:
-            raise ValueError('Invalid scaling_range. Got: {}'.format(scaling_range))
+        self.min_scaling_range = self.scaling_range[0]
+        self.max_scaling_range = self.scaling_range[1]
 
     def apply(self, ecg, scaling_factor, **params):
         return F.amplitude_scale(ecg, scaling_factor)
