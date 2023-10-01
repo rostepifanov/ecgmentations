@@ -1,3 +1,12 @@
+def prepare_float(param, name):
+    if not isinstance(param, (float, int)):
+        raise ValueError(
+            '{} must be scalar (float).'.format(
+                name
+            )
+        )
+
+    return float(param)
 
 def prepare_int_asymrange(param, name, low):
     if isinstance(param, int):
@@ -11,6 +20,13 @@ def prepare_int_asymrange(param, name, low):
             )
     elif isinstance(param, (tuple, list)):
         if len(param) == 2:
+            if not (list(map(type, param)) == [int, int]):
+                raise ValueError(
+                    '{} must be tuple (int, int).'.format(
+                        name
+                    )
+                )
+
             if param[0] > param[1]:
                 param = (param[1], param[0])
 
@@ -28,11 +44,12 @@ def prepare_int_asymrange(param, name, low):
             )
     else:
         raise ValueError(
-            '{name} must be either scalar (int) or tuple (int, int).'.format(
+            '{} must be either scalar (int) or tuple (int, int).'.format(
                 name
             )
         )
 
+    return tuple(param)
 
 def prepare_float_symrange(param, name):
     if isinstance(param, float):
@@ -52,7 +69,7 @@ def prepare_float_symrange(param, name):
             )
     else:
         raise ValueError(
-            '{name} must be either scalar (float) or tuple (float, float).'.format(
+            '{} must be either scalar (float) or tuple (float, float).'.format(
                 name
             )
         )
