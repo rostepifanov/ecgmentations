@@ -112,12 +112,13 @@ class GaussNoise(EcgOnlyTransform):
         """
         super(GaussNoise, self).__init__(always_apply, p)
 
-        self.mean = mean
-        self.variance = variance
-        self.per_channel = per_channel
+        self.mean = M.prepare_float(mean, 'mean')
 
-        if variance < 0:
+        if variance < 0.:
             raise ValueError('Variance should be non negative.')
+
+        self.variance = M.prepare_float(variance, 'variance')
+        self.per_channel = per_channel
 
     def apply(self, ecg, gauss, **params):
         return F.gauss_noise(ecg, gauss)
@@ -197,10 +198,10 @@ class GaussBlur(EcgOnlyTransform):
         """
         super(GaussBlur, self).__init__(always_apply, p)
 
-        if variance < 0:
+        if variance < 0.:
             raise ValueError('Variance should be non negative.')
 
-        self.variance = variance
+        self.variance = M.prepare_float(variance, 'variance')
 
         self.kernel_size_range = M.prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
 
@@ -286,7 +287,7 @@ class TimeCutout(DualTransform):
         self.min_length_range = length_range[0]
         self.max_length_range = length_range[1]
 
-        self.fill_value = fill_value
+        self.fill_value = M.prepare_float(fill_value, 'fill_value')
         self.mask_fill_value = mask_fill_value
 
     def apply(self, ecg, cutouts, **params):
