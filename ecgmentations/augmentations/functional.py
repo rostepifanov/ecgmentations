@@ -42,3 +42,6 @@ def conv(ecg, kernel, border_mode, border_value):
     )
 
     return ecg
+
+def amplitude_scale(ecg, scaling_factor):
+    return ecg * scaling_factor
