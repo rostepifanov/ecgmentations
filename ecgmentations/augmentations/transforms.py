@@ -3,7 +3,7 @@ import numpy as np
 import ecgmentations.augmentations.functional as F
 
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
-from ecgmentations.augmentations.misc import prepare_int_arange, prepare_float_symrange
+from ecgmentations.augmentations.misc import prepare_int_asymrange, prepare_float_symrange
 
 class Reverse(DualTransform):
     """Reverse the input ecg.
@@ -59,16 +59,10 @@ class ChannelDropout(EcgOnlyTransform):
         """
         super(ChannelDropout, self).__init__(always_apply, p)
 
-        self.channel_drop_range = channel_drop_range
+        self.channel_drop_range = prepare_int_asymrange(channel_drop_range, 'channel_drop_range',1)
 
         self.min_channels = channel_drop_range[0]
         self.max_channels = channel_drop_range[1]
-
-        if not (isinstance(channel_drop_range, tuple) and list(map(type, channel_drop_range)) == [int, int]):
-            raise ValueError('Invalive type of channel_drop_range. Must be (int, int), but got {}'.format(channel_drop_range))
-
-        if not 1 <= self.min_channels <= self.max_channels:
-            raise ValueError('Invalid channel_drop_range. Got: {}'.format(channel_drop_range))
 
         self.fill_value = fill_value
 
@@ -159,19 +153,13 @@ class Blur(EcgOnlyTransform):
         """
         super(Blur, self).__init__(always_apply, p)
 
-        if not (isinstance(kernel_size_range, tuple) and list(map(type, kernel_size_range)) == [int, int]):
-            raise ValueError('Invalive type of kernel_size_range. Must be (int, int), but got {}'.format(kernel_size_range))
-
-        self.kernel_size_range = kernel_size_range
+        self.kernel_size_range = prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
 
         self.min_kernel_size = kernel_size_range[0]
         self.max_kernel_size = kernel_size_range[1]
 
         if self.min_kernel_size % 2 == 0 or self.max_kernel_size % 2 == 0:
-            raise ValueError('Invalid range borders. Must be odd, but got: {}'.format(kernel_size_range))
-
-        if not 1 <= self.min_kernel_size <= self.max_kernel_size:
-            raise ValueError('Invalid kernel_size_range. Got: {}'.format(kernel_size_range))
+            raise ValueError('Invalid range borders. Must be odd, but got: {}.'.format(kernel_size_range))
 
     def apply(self, ecg, kernel, **params):
         return F.conv(ecg, kernel, cv2.BORDER_CONSTANT, 0)
@@ -214,19 +202,13 @@ class GaussBlur(EcgOnlyTransform):
 
         self.variance = variance
 
-        if not (isinstance(kernel_size_range, tuple) and list(map(type, kernel_size_range)) == [int, int]):
-            raise ValueError('Invalive type of kernel_size_range. Must be (int, int), but got {}'.format(kernel_size_range))
-
-        self.kernel_size_range = kernel_size_range
+        self.kernel_size_range = prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
 
         self.min_kernel_size = kernel_size_range[0]
         self.max_kernel_size = kernel_size_range[1]
 
         if self.min_kernel_size % 2 == 0 or self.max_kernel_size % 2 == 0:
-            raise ValueError('Invalid range borders. Must be odd, but got: {}'.format(kernel_size_range))
-
-        if not 1 <= self.min_kernel_size <= self.max_kernel_size:
-            raise ValueError('Invalid kernel_size_range. Got: {}'.format(kernel_size_range))
+            raise ValueError('Invalid range borders. Must be odd, but got: {}.'.format(kernel_size_range))
 
     def apply(self, ecg, kernel, **params):
         return F.conv(ecg, kernel, cv2.BORDER_CONSTANT, 0)
@@ -294,12 +276,12 @@ class TimeCutout(DualTransform):
         """
         super(TimeCutout, self).__init__(always_apply, p)
 
-        self.num_ranges = prepare_int_arange(num_ranges, 'num_ranges', 0)
+        self.num_ranges = prepare_int_asymrange(num_ranges, 'num_ranges', 0)
 
         self.min_num_ranges = num_ranges[0]
         self.max_num_ranges = num_ranges[1]
 
-        self.length_range = prepare_int_arange(length_range, 'length_range', 0)
+        self.length_range = prepare_int_asymrange(length_range, 'length_range', 0)
 
         self.min_length_range = length_range[0]
         self.max_length_range = length_range[1]
