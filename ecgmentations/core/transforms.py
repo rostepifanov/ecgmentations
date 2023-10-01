@@ -111,8 +111,8 @@ class DualTransform(Transform):
             'mask': self.apply_to_mask,
         }
 
-    def apply_to_mask(self, ecg, **params):
-        return self.apply(ecg, **{k: cv2.INTER_NEAREST if k == 'interpolation' else v for k, v in params.items()})
+    def apply_to_mask(self, mask, **params):
+        return self.apply(mask, **{k: cv2.INTER_NEAREST if k == 'interpolation' else v for k, v in params.items()})
 
 class Identity(DualTransform):
     """Identity transform"""

@@ -45,3 +45,11 @@ def conv(ecg, kernel, border_mode, border_value):
 
 def amplitude_scale(ecg, scaling_factor):
     return ecg * scaling_factor
+
+def time_cutout(ecg, cutouts, fill_value):
+    ecg = np.array(ecg)
+
+    for cutout_start, cutout_length in cutouts:
+        ecg[cutout_start: cutout_start+cutout_length] = fill_value
+
+    return ecg

@@ -1,5 +1,5 @@
 
-def prepare_int_arange(param, name):
+def prepare_int_arange(param, name, low):
     pass
 
 def prepare_float_symrange(param, name):

@@ -38,7 +38,21 @@ def test_channel_shuffle_CASE_inverse_order():
 def test_channel_dropout_CASE_default():
     ecg = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1] ]).T
 
-    output = F.channel_dropout(ecg, (0, ), 0)
+    channels_to_drop = (0, )
+    fill_value = 0
+
+    output = F.channel_dropout(ecg, channels_to_drop, fill_value)
     expected = np.array([[0, 0, 0, 0, 0, 0], [6, 5, 4, 3, 2, 1] ]).T
+
+    assert pytest.approx(output) == expected
+
+def test_time_cutout_CASE_default():
+    ecg = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1] ]).T
+
+    cutouts = [(0, 2)]
+    fill_value = 0
+
+    output = F.time_cutout(ecg, cutouts, fill_value)
+    expected = np.array([[0, 0, 3, 4, 5, 6], [0, 0, 4, 3, 2, 1] ]).T
 
     assert pytest.approx(output) == expected
