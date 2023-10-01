@@ -6,4 +6,5 @@ from ecgmentations.augmentations.transforms import (
     GaussNoise,
     Blur,
     GaussBlur,
+    AmplitudeScale,
 )

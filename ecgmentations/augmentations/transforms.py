@@ -152,7 +152,6 @@ class Blur(EcgOnlyTransform):
             always_apply=False,
             p=0.5
         ):
-
         """
             :args:
                 kernel_size_range ((int, int)): range for select kernel size of blur filter
@@ -195,7 +194,6 @@ class GaussBlur(EcgOnlyTransform):
             always_apply=False,
             p=0.5
         ):
-
         """
             :NOTE:
                 transformation is similar to gaussian blur in paper "Self-supervised representation learning from 12-lead ECG data"
@@ -242,3 +240,40 @@ class GaussBlur(EcgOnlyTransform):
 
     def get_transform_init_args_names(self):
         return ('variance', 'kernel_size_range')
+
+class AmplitudeScale(EcgOnlyTransform):
+    """Scale amplitude of the input ecg.
+    """
+    def __init__(
+            self,
+            scaling_range=(-0.05, 0.05),
+            always_apply=False,
+            p=0.5
+        ):
+        """
+            :args:
+                scaling_range ((float, float)): range for selecting scaling factor
+        """
+        super(AmplitudeScale, self).__init__(always_apply, p)
+
+        if not (isinstance(scaling_range, tuple) and list(map(type, scaling_range)) == [float, float]):
+            raise ValueError('Invalive type of scaling_range. Must be (float, float), but got {}'.format(scaling_range))
+
+        self.scaling_range = scaling_range
+
+        self.min_scaling_range = scaling_range[0]
+        self.max_scaling_range = scaling_range[1]
+
+        if not self.scaling_range <= self.scaling_range:
+            raise ValueError('Invalid scaling_range. Got: {}'.format(scaling_range))
+
+    def apply(self, ecg, scaling_factor, **params):
+        return F.amplitude_scale(ecg, scaling_factor)
+
+    def get_params(self):
+        scaling_factor = 1 + np.random.uniform(self.min_scaling_range, self.max_scaling_range)
+
+        return {'scaling_factor': scaling_factor}
+
+    def get_transform_init_args_names(self):
+        return ('scaling_range', )

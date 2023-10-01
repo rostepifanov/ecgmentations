@@ -55,6 +55,7 @@ The list of all transforms:
 - [GaussNoise]()
 - [Blur]()
 - [GaussBlur]()
+- [AmplitudeScale]()
 
 # Citing
 
