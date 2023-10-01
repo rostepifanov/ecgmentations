@@ -1,9 +1,9 @@
 import cv2
 import numpy as np
+import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.functional as F
 
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
-from ecgmentations.augmentations.misc import prepare_int_asymrange, prepare_float_symrange
 
 class Reverse(DualTransform):
     """Reverse the input ecg.
@@ -59,12 +59,12 @@ class ChannelDropout(EcgOnlyTransform):
         """
         super(ChannelDropout, self).__init__(always_apply, p)
 
-        self.channel_drop_range = prepare_int_asymrange(channel_drop_range, 'channel_drop_range',1)
+        self.channel_drop_range = M.prepare_int_asymrange(channel_drop_range, 'channel_drop_range',1)
 
-        self.min_channels = channel_drop_range[0]
-        self.max_channels = channel_drop_range[1]
+        self.min_drop_channels = channel_drop_range[0]
+        self.max_drop_channels = channel_drop_range[1]
 
-        self.fill_value = fill_value
+        self.fill_value = M.prepare_float(fill_value, 'fill_value')
 
     def apply(self, ecg, channels_to_drop, **params):
         return F.channel_dropout(ecg, channels_to_drop, self.fill_value)
@@ -79,10 +79,10 @@ class ChannelDropout(EcgOnlyTransform):
         if num_channels == 1:
             raise NotImplementedError('Ecg has one channel. ChannelDropout is not defined.')
 
-        if self.max_channels >= num_channels:
+        if not ( self.max_drop_channels < num_channels ):
             raise ValueError('Can not drop all channels in ChannelDropout.')
 
-        num_drop_channels = np.random.randint(low=self.min_channels, high=self.max_channels+1)
+        num_drop_channels = np.random.randint(low=self.min_drop_channels, high=self.max_drop_channels+1)
         channels_to_drop = np.random.choice(num_channels, size=num_drop_channels)
 
         return {'channels_to_drop': channels_to_drop}
@@ -153,7 +153,7 @@ class Blur(EcgOnlyTransform):
         """
         super(Blur, self).__init__(always_apply, p)
 
-        self.kernel_size_range = prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
+        self.kernel_size_range = M.prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
 
         self.min_kernel_size = kernel_size_range[0]
         self.max_kernel_size = kernel_size_range[1]
@@ -202,7 +202,7 @@ class GaussBlur(EcgOnlyTransform):
 
         self.variance = variance
 
-        self.kernel_size_range = prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
+        self.kernel_size_range = M.prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
 
         self.min_kernel_size = kernel_size_range[0]
         self.max_kernel_size = kernel_size_range[1]
@@ -239,7 +239,7 @@ class AmplitudeScale(EcgOnlyTransform):
         """
         super(AmplitudeScale, self).__init__(always_apply, p)
 
-        self.scaling_range = prepare_float_symrange(scaling_range, 'scaling_range')
+        self.scaling_range = M.prepare_float_symrange(scaling_range, 'scaling_range')
 
         self.min_scaling_range = self.scaling_range[0]
         self.max_scaling_range = self.scaling_range[1]
@@ -276,12 +276,12 @@ class TimeCutout(DualTransform):
         """
         super(TimeCutout, self).__init__(always_apply, p)
 
-        self.num_ranges = prepare_int_asymrange(num_ranges, 'num_ranges', 0)
+        self.num_ranges = M.prepare_int_asymrange(num_ranges, 'num_ranges', 0)
 
         self.min_num_ranges = num_ranges[0]
         self.max_num_ranges = num_ranges[1]
 
-        self.length_range = prepare_int_asymrange(length_range, 'length_range', 0)
+        self.length_range = M.prepare_int_asymrange(length_range, 'length_range', 0)
 
         self.min_length_range = length_range[0]
         self.max_length_range = length_range[1]
@@ -303,11 +303,13 @@ class TimeCutout(DualTransform):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
+        length = params['ecg'].shape[0]
+
         cutouts = []
 
         for _ in range(np.random.randint(self.min_num_ranges, self.max_num_ranges)):
             cutout_length = np.random.randint(self.min_length_range, self.max_length_range)
-            cutout_start = np.random.randint(0, params['ecg'].shape[0] - cutout_length)
+            cutout_start = np.random.randint(0, length - cutout_length)
 
             cutouts.append((cutout_start, cutout_length))
 
