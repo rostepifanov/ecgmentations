@@ -272,3 +272,64 @@ class AmplitudeScale(EcgOnlyTransform):
 
     def get_transform_init_args_names(self):
         return ('scaling_range', )
+
+class TimeCutout(DualTransform):
+    """Randomly cutout time ranges in the input ecg.
+    """
+    def __init__(
+            self,
+            num_ranges=(1, 5),
+            length_range=(0, 50),
+            fill_value=0.,
+            mask_fill_value=None,
+            always_apply=False,
+            p=0.5,
+        ):
+        """
+            :args:
+                num_ranges ((int, int)): number of cutout ranges
+                length_range ((int, int)): range for selecting cutout length
+                fill_value (float): value to fill cutouted ranges in the input ecg
+                mask_fill_value (int, None): value to fill cutouted ranges in the mask. if value is None, mask is not affected
+        """
+        super(TimeCutout, self).__init__(always_apply, p)
+
+        self.num_ranges = prepare_int_arange(num_ranges, 'num_ranges', 0)
+
+        self.min_num_ranges = num_ranges[0]
+        self.max_num_ranges = num_ranges[1]
+
+        self.length_range = prepare_int_arange(length_range, 'length_range', 0)
+
+        self.min_length_range = length_range[0]
+        self.max_length_range = length_range[1]
+
+        self.fill_value = fill_value
+        self.mask_fill_value = mask_fill_value
+
+    def apply(self, ecg, cutouts, **params):
+        return F.time_cutout(ecg, cutouts, self.fill_value)
+
+    def apply_to_mask(self, mask, cutouts, **params):
+        if self.mask_fill_value is None:
+            return mask
+        else:
+            return F.time_cutout(ecg, cutouts, self.mask_fill_value)
+
+    @property
+    def targets_as_params(self):
+        return ['ecg']
+
+    def get_params_dependent_on_targets(self, params):
+        cutouts = []
+
+        for _ in range(np.random.randint(self.min_num_ranges, self.max_num_ranges)):
+            cutout_length = np.random.randint(self.min_length_range, self.max_length_range)
+            cutout_start = np.random.randint(0, params['ecg'].shape[0] - cutout_length)
+
+            cutouts.append((cutout_start, cutout_length))
+
+        return {'cutouts': cutouts}
+
+    def get_transform_init_args_names(self):
+        return ('num_ranges', 'length_range', 'fill_value', 'mask_fill_value')

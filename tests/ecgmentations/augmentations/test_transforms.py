@@ -12,6 +12,7 @@ TRANSFORMS = [
     E.Blur,
     E.GaussBlur,
     E.AmplitudeScale,
+    E.TimeCutout,
 ]
 
 @pytest.mark.parametrize('transform', TRANSFORMS)
