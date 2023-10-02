@@ -4,8 +4,8 @@ import numpy as np
 import ecgmentations as E
 
 TRANSFORMS = [
-    E.Reverse,
-    E.Invert,
+    E.TimeReverse,
+    E.AmplitudeInvert,
     E.ChannelShuffle,
     E.ChannelDropout,
     E.GaussNoise,
