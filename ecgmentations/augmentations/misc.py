@@ -1,3 +1,10 @@
+from itertools import tee
+
+def pairwise(iterable):
+    first, second = tee(iterable)
+    next(second, None)
+    yield from zip(first, second)
+
 def prepare_float(param, name):
     if not isinstance(param, (float, int)):
         raise ValueError(

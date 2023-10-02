@@ -9,4 +9,5 @@ from ecgmentations.augmentations.transforms import (
     AmplitudeScale,
     TimeCutout,
     RandomTimeCrop,
+    RandomTimeWrap,
 )
