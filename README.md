@@ -57,6 +57,7 @@ The list of all transforms:
 - [GaussBlur]()
 - [AmplitudeScale]()
 - [TimeCutout]()
+- [RandomTimeCrop]()
 
 # Citing
 

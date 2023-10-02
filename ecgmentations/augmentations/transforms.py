@@ -318,3 +318,32 @@ class TimeCutout(DualTransform):
 
     def get_transform_init_args_names(self):
         return ('num_ranges', 'length_range', 'fill_value', 'mask_fill_value')
+
+class RandomTimeCrop(DualTransform):
+    """Randomly crop time region from the input ecg.
+    """
+    def __init__(
+            self,
+            length=5000,
+            always_apply=False,
+            p=0.5,
+        ):
+        """
+            :args:
+                length (int): the length of cropped region
+        """
+        super(RandomTimeCrop, self).__init__(always_apply, p)
+
+        if length < 0:
+            raise ValueError('Length should be non negative.')
+
+        self.length = length
+
+    def apply(self, ecg, left_bound, **params):
+        return F.random_time_crop(ecg, left_bound, self.length)
+
+    def get_params(self):
+        return {'left_bound': np.random.random()}
+
+    def get_transform_init_args_names(self):
+        return ('length', )

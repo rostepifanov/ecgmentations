@@ -53,3 +53,19 @@ def time_cutout(ecg, cutouts, fill_value):
         ecg[cutout_start: cutout_start+cutout_length] = fill_value
 
     return ecg
+
+def random_time_crop(ecg, left_bound, crop_length):
+    length = ecg.shape[0]
+
+    if length < crop_length:
+        raise ValueError(
+            'Requested crop length {crop_length} is '
+            'larger than the ecg length {length}'.format(
+                crop_length=crop_length, length=length
+            )
+        )
+
+    t1 = int((length - crop_length + 1) * left_bound)
+    t2 = t1 + crop_length
+
+    return ecg[t1:t2]
