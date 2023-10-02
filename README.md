@@ -48,7 +48,7 @@ transformed = transform(ecg=ecg)
 transformed_ecg = transformed['ecg']
 ```
 
-# List of augmentations
+## List of augmentations
 
 The list of all transforms:
 
@@ -64,7 +64,7 @@ The list of all transforms:
 - [RandomTimeCrop]()
 - [RandomTimeWrap]()
 
-# Citing
+## Citing
 
 If you find this library useful for your research, please consider citing:
 
