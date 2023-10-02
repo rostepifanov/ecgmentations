@@ -1,5 +1,9 @@
 # Ecgmentations
 
+![Python version support](https://img.shields.io/pypi/pyversions/ecgmentations)
+[![PyPI version](https://badge.fury.io/py/ecgmentations.svg)](https://badge.fury.io/py/ecgmentations)
+[![Downloads](https://pepy.tech/badge/ecgmentations/month)](https://pepy.tech/project/ecgmentations?versions=0.0.*)
+
 Ecgmentations is a Python library for ecg augmentation. Ecg augmentation is used in deep learning to increase the quality of trained models. The purpose of ecg augmentation is to create new training samples from the existing data.
 
 Here is an example of how you can apply some augmentations from Ecgmentations to create new ecgs from the original one:
