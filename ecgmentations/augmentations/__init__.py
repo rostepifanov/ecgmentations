@@ -1,7 +1,13 @@
 from ecgmentations.augmentations.transforms import (
-    Reverse,
-    Invert,
+    TimeReverse,
+    AmplitudeInvert,
     ChannelShuffle,
     ChannelDropout,
     GaussNoise,
+    Blur,
+    GaussBlur,
+    AmplitudeScale,
+    TimeCutout,
+    RandomTimeCrop,
+    RandomTimeWrap,
 )

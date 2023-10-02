@@ -23,7 +23,7 @@ setuptools.setup(
     long_description_content_type='text/markdown',
     author='Rostislav Epifanov',
     license='MIT',
-    url='https://github.com/rostepifanov/egcmentations',
+    url='https://github.com/rostepifanov/ecgmentations',
     packages=setuptools.find_packages(exclude=['tests']),
     python_requires='>=3.7',
     install_requires=INSTALL_REQUIRES,
