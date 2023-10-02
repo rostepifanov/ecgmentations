@@ -82,7 +82,7 @@ class ChannelDropout(EcgOnlyTransform):
         if not ( self.max_drop_channels < num_channels ):
             raise ValueError('Can not drop all channels in ChannelDropout.')
 
-        num_drop_channels = np.random.randint(low=self.min_drop_channels, high=self.max_drop_channels+1)
+        num_drop_channels = np.random.randint(low=self.min_drop_channels, high=self.max_drop_channels + 1)
         channels_to_drop = np.random.choice(num_channels, size=num_drop_channels)
 
         return {'channels_to_drop': channels_to_drop}
@@ -308,9 +308,9 @@ class TimeCutout(DualTransform):
 
         cutouts = []
 
-        for _ in range(np.random.randint(self.min_num_ranges, self.max_num_ranges)):
-            cutout_length = np.random.randint(self.min_length_range, self.max_length_range)
-            cutout_start = np.random.randint(0, length - cutout_length)
+        for _ in range(np.random.randint(self.min_num_ranges, self.max_num_ranges + 1)):
+            cutout_length = np.random.randint(self.min_length_range, self.max_length_range + 1)
+            cutout_start = np.random.randint(0, length - cutout_length + 1)
 
             cutouts.append((cutout_start, cutout_length))
 
@@ -363,7 +363,6 @@ class RandomTimeWrap(DualTransform):
             :args:
                 num_steps (int): count of grid cells on the ecg
                 wrap_limit (float): limit of stretching or squeezing
-
         """
         super(RandomTimeWrap, self).__init__(always_apply, p)
 
