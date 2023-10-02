@@ -14,7 +14,7 @@ Here is an example of how you can apply some augmentations from Ecgmentations to
 - [Citing](#citing)
 
 ## Authors
-[**Rostislav Epifanov** — Researcher at Novosibirsk State University]()
+[**Rostislav Epifanov** — Researcher in Novosibirsk]()
 
 ## Installation
 Installation from PyPI:
