@@ -58,6 +58,7 @@ The list of all transforms:
 - [AmplitudeScale]()
 - [TimeCutout]()
 - [RandomTimeCrop]()
+- [RandomTimeWrap]()
 
 # Citing
 

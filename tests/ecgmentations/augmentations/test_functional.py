@@ -57,33 +57,33 @@ def test_time_cutout_CASE_default():
 
     assert pytest.approx(output) == expected
 
-def test_random_time_crop_CASE_default():
+def test_time_crop_CASE_default():
     ecg = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1]]).T
 
     left_bound = 1 / 4
     crop_length = 2
 
-    output = F.random_time_crop(ecg, left_bound, crop_length)
+    output = F.time_crop(ecg, left_bound, crop_length)
     expected = np.array([[2, 3], [5, 4]]).T
 
     assert pytest.approx(output) == expected
 
-def test_random_time_crop_CASE_equal_legth():
+def test_time_crop_CASE_equal_legth():
     ecg = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1]]).T
 
     left_bound = 1 / 6
     crop_length = 6
 
-    output = F.random_time_crop(ecg, left_bound, crop_length)
+    output = F.time_crop(ecg, left_bound, crop_length)
     expected = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1]]).T
 
     assert pytest.approx(output) == expected
 
-def test_random_time_crop_CASE_large_length():
+def test_time_crop_CASE_large_length():
     ecg = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1]]).T
 
     left_bound = 1 / 6
     crop_length = 8
 
     with pytest.raises(ValueError):
-        F.random_time_crop(ecg, left_bound, crop_length)
+        F.time_crop(ecg, left_bound, crop_length)

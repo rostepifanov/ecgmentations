@@ -1,6 +1,8 @@
 import cv2
 import numpy as np
 
+import ecgmentations.augmentations.misc as M
+
 def time_reverse(ecg):
     return np.flip(ecg, axis=0)
 
@@ -54,7 +56,7 @@ def time_cutout(ecg, cutouts, fill_value):
 
     return ecg
 
-def random_time_crop(ecg, left_bound, crop_length):
+def time_crop(ecg, left_bound, crop_length):
     length = ecg.shape[0]
 
     if length < crop_length:
@@ -69,3 +71,24 @@ def random_time_crop(ecg, left_bound, crop_length):
     t2 = t1 + crop_length
 
     return ecg[t1:t2]
+
+def time_wrap(ecg, cells, ncells):
+    length = ecg.shape[0]
+
+    bounds = (length * cells).astype(np.int32)
+    nbounds = (length * ncells).astype(np.int32)
+
+    necg = np.zeros_like(ecg)
+
+    for (left_bound, rigth_bound), (left_nbound, rigth_nbound) in zip(M.pairwise(bounds), M.pairwise(nbounds)):
+        necg[left_nbound: rigth_nbound] = np.apply_along_axis(
+            lambda ecg: np.interp(
+                np.linspace(0, 1, rigth_nbound - left_nbound),
+                np.linspace(0, 1, rigth_bound - left_bound),
+                ecg
+            ),
+            axis=0,
+            arr=ecg[left_bound: rigth_bound]
+        )
+
+    return necg

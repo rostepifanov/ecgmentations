@@ -113,11 +113,11 @@ class GaussNoise(EcgOnlyTransform):
         super(GaussNoise, self).__init__(always_apply, p)
 
         self.mean = M.prepare_float(mean, 'mean')
+        self.variance = M.prepare_float(variance, 'variance')
 
         if variance < 0.:
             raise ValueError('Variance should be non negative.')
 
-        self.variance = M.prepare_float(variance, 'variance')
         self.per_channel = per_channel
 
     def apply(self, ecg, gauss, **params):
@@ -334,16 +334,63 @@ class RandomTimeCrop(DualTransform):
         """
         super(RandomTimeCrop, self).__init__(always_apply, p)
 
+        self.length = length
+
         if length < 0:
             raise ValueError('Length should be non negative.')
 
-        self.length = length
-
     def apply(self, ecg, left_bound, **params):
-        return F.random_time_crop(ecg, left_bound, self.length)
+        return F.time_crop(ecg, left_bound, self.length)
 
     def get_params(self):
         return {'left_bound': np.random.random()}
 
     def get_transform_init_args_names(self):
         return ('length', )
+
+class RandomTimeWrap(DualTransform):
+    """Randomly stretch and squeeze contiguous segments of the input ecg
+    """
+
+    def __init__(
+            self,
+            num_steps=5,
+            wrap_limit=0.05,
+            always_apply=False,
+            p=0.5,
+        ):
+        """
+            :args:
+                num_steps (int): count of grid cells on the ecg
+                wrap_limit (float): limit of stretching or squeezing
+
+        """
+        super(RandomTimeWrap, self).__init__(always_apply, p)
+
+        self.num_steps = num_steps
+
+        if num_steps < 0:
+            raise ValueError('Number of steps should be non negative.')
+
+        self.wrap_limit = M.prepare_float(wrap_limit, 'wrap_limit')
+
+        if wrap_limit < 0.:
+            raise ValueError('Wrap limit should be non negative.')
+
+    def apply(self, ecg, cells, ncells, **params):
+        return F.time_wrap(ecg, cells, ncells)
+
+    def get_params(self):
+        cells = np.linspace(0, 1, self.num_steps+1)
+        ncells = np.linspace(0, 1, self.num_steps+1)
+
+        if self.num_steps > 1:
+            directions = np.random.choice([-1, 1], size=self.num_steps-1)
+            shifts = np.random.random(size=self.num_steps-1) * self.wrap_limit * 0.5
+
+            ncells[1:-1] += shifts * directions / (self.num_steps + 1)
+
+        return {'cells': cells, 'ncells': ncells}
+
+    def get_transform_init_args_names(self):
+        return ('num_steps', 'wrap_limit')
