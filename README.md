@@ -32,7 +32,7 @@ import ecgmentations as E
 
 # Declare an augmentation pipeline
 transform = E.Sequential([
-    E.Reverse(p=0.5),
+    E.TimeReverse(p=0.5),
     E.ChannelShuffle(p=0.06),
 ])
 
@@ -48,8 +48,8 @@ transformed_ecg = transformed['ecg']
 
 The list of all transforms:
 
-- [Reverse]()
-- [Invert]()
+- [TimeReverse]()
+- [AmplitudeInvert]()
 - [ChannelShuffle]()
 - [ChannelDropout]()
 - [GaussNoise]()

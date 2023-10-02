@@ -17,7 +17,7 @@ def test_Sequential_CASE_call_AND_one_flip():
     ecg = np.random.random((12, 5000))
 
     transform = E.Sequential([
-        E.Reverse(always_apply=True)
+        E.TimeReverse(always_apply=True)
     ])
 
     output = transform(ecg=ecg)['ecg']
@@ -28,8 +28,8 @@ def test_Sequential_CASE_call_AND_double_flip():
     ecg = np.random.random((12, 5000))
 
     transform = E.Sequential([
-        E.Reverse(always_apply=True),
-        E.Reverse(always_apply=True)
+        E.TimeReverse(always_apply=True),
+        E.TimeReverse(always_apply=True)
     ])
 
     output = transform(ecg=ecg)['ecg']

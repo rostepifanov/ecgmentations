@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
-def reverse(ecg):
+def time_reverse(ecg):
     return np.flip(ecg, axis=0)
 
-def invert(ecg):
+def amplitude_invert(ecg):
     return np.negative(ecg)
 
 def channel_shuffle(ecg, channel_order):
