@@ -8,7 +8,7 @@ Ecgmentations is a Python library for ecg augmentation. Ecg augmentation is used
 
 Here is an example of how you can apply some augmentations from Ecgmentations to create new ecgs from the original one:
 
-![preview](images/preview.png)
+![preview](https://raw.githubusercontent.com/rostepifanov/ecgmentations/main/images/preview.png)
 
 ## Table of contents
 - [Authors](#authors)
