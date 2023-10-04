@@ -72,7 +72,7 @@ def time_crop(ecg, left_bound, crop_length):
             )
         )
 
-    t1 = int((length - crop_length + 1) * left_bound)
+    t1 = int((length - crop_length) * left_bound)
     t2 = t1 + crop_length
 
     return ecg[t1:t2]

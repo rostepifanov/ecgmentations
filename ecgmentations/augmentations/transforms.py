@@ -336,19 +336,19 @@ class TimeCrop(DualTransform):
         """
         super(TimeCrop, self).__init__(always_apply, p)
 
-        self.length = M.prepare_float(length, 'length')
-        self.position = position
+        self.length = M.prepare_int(length, 'length')
+        self.position = PositionType(position)
 
     def apply(self, ecg, left_bound, **params):
         return F.time_crop(ecg, left_bound, self.length)
 
     def get_params(self):
-        if self.position == PositionType.CENTER:
-            left_bound = 0.
-        elif self.position == PositionType.LEFT:
+        if self.position == PositionType.LEFT:
+            left_bound = 1.0
+        elif self.position == PositionType.CENTER:
             left_bound = 0.5
         elif self.position == PositionType.RIGHT:
-            left_bound = 1.
+            left_bound = 0.0
         else:
             left_bound = np.random.random()
 
@@ -443,12 +443,12 @@ class TimePadIfNeeded(DualTransform):
 
         pad_length = max(0, self.min_length - length)
 
-        if self.position == PositionType.CENTER:
-            left_pad = pad_length // 2
-            rigth_pad = pad_length - left_pad
-        elif self.position == PositionType.LEFT:
+        if self.position == PositionType.LEFT:
             left_pad = 0
             rigth_pad = pad_length
+        elif self.position == PositionType.CENTER:
+            left_pad = pad_length // 2
+            rigth_pad = pad_length - left_pad
         elif self.position == PositionType.RIGHT:
             left_pad = pad_length
             rigth_pad = 0
