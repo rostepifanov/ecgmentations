@@ -21,9 +21,7 @@ def channel_dropout(ecg, channels_to_drop, fill_value):
 def gauss_noise(ecg, gauss):
     return ecg + gauss
 
-def conv(ecg, kernel, border_mode, border_value):
-    pad_width = kernel.size // 2
-
+def pad(ecg, left_pad, rigth_pad, border_mode, fill_value):
     if border_mode == cv2.BORDER_CONSTANT:
         border_mode = 'constant'
     elif border_mode == cv2.BORDER_REPLICATE:
@@ -32,10 +30,17 @@ def conv(ecg, kernel, border_mode, border_value):
         raise ValueError('Get invalide border_mode: {}'.format(border_mode))
 
     ecg = np.apply_along_axis(
-        lambda ecg: np.pad(ecg, pad_width=pad_width, mode=border_mode, constant_values=border_value),
+        lambda ecg: np.pad(ecg, pad_width=(left_pad, rigth_pad), mode=border_mode, constant_values=fill_value),
         axis=0,
         arr=ecg
     )
+
+    return ecg
+
+def conv(ecg, kernel, border_mode, fill_value):
+    pad_width = kernel.size // 2
+
+    ecg = pad(ecg, pad_width, pad_width, border_mode, fill_value)
 
     ecg = np.apply_along_axis(
         lambda ecg: np.correlate(ecg, kernel, mode='valid'),
