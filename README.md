@@ -67,6 +67,7 @@ The list of all transforms:
 - [TimeCutout]()
 - [RandomTimeCrop]()
 - [RandomTimeWrap]()
+- [TimePadIfNeeded]()
 
 ## Citing
 

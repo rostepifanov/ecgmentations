@@ -10,4 +10,5 @@ from ecgmentations.augmentations.transforms import (
     TimeCutout,
     RandomTimeCrop,
     RandomTimeWrap,
+    TimePadIfNeeded,
 )

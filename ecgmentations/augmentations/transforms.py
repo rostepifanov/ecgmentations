@@ -1,5 +1,7 @@
 import cv2
+import enum
 import numpy as np
+
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.functional as F
 
@@ -113,11 +115,7 @@ class GaussNoise(EcgOnlyTransform):
         super(GaussNoise, self).__init__(always_apply, p)
 
         self.mean = M.prepare_float(mean, 'mean')
-        self.variance = M.prepare_float(variance, 'variance')
-
-        if variance < 0.:
-            raise ValueError('Variance should be non negative.')
-
+        self.variance = M.prepare_non_negative_float(variance, 'variance')
         self.per_channel = per_channel
 
     def apply(self, ecg, gauss, **params):
@@ -198,11 +196,7 @@ class GaussBlur(EcgOnlyTransform):
         """
         super(GaussBlur, self).__init__(always_apply, p)
 
-        if variance < 0.:
-            raise ValueError('Variance should be non negative.')
-
-        self.variance = M.prepare_float(variance, 'variance')
-
+        self.variance = M.prepare_non_negative_float(variance, 'variance')
         self.kernel_size_range = M.prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
 
         self.min_kernel_size = kernel_size_range[0]
@@ -326,7 +320,7 @@ class RandomTimeCrop(DualTransform):
             self,
             length=5000,
             always_apply=False,
-            p=0.5,
+            p=1.0,
         ):
         """
             :args:
@@ -334,10 +328,7 @@ class RandomTimeCrop(DualTransform):
         """
         super(RandomTimeCrop, self).__init__(always_apply, p)
 
-        self.length = length
-
-        if length < 0:
-            raise ValueError('Length should be non negative.')
+        self.length = M.prepare_float(length, 'length')
 
     def apply(self, ecg, left_bound, **params):
         return F.time_crop(ecg, left_bound, self.length)
@@ -351,7 +342,6 @@ class RandomTimeCrop(DualTransform):
 class RandomTimeWrap(DualTransform):
     """Randomly stretch and squeeze contiguous segments of the input ecg
     """
-
     def __init__(
             self,
             num_steps=5,
@@ -366,15 +356,8 @@ class RandomTimeWrap(DualTransform):
         """
         super(RandomTimeWrap, self).__init__(always_apply, p)
 
-        self.num_steps = num_steps
-
-        if num_steps < 0:
-            raise ValueError('Number of steps should be non negative.')
-
-        self.wrap_limit = M.prepare_float(wrap_limit, 'wrap_limit')
-
-        if wrap_limit < 0.:
-            raise ValueError('Wrap limit should be non negative.')
+        self.num_steps = M.prepare_non_negative_int(num_steps, 'num_steps')
+        self.wrap_limit = M.prepare_non_negative_float(wrap_limit, 'wrap_limit')
 
     def apply(self, ecg, cells, ncells, **params):
         return F.time_wrap(ecg, cells, ncells)
@@ -393,3 +376,72 @@ class RandomTimeWrap(DualTransform):
 
     def get_transform_init_args_names(self):
         return ('num_steps', 'wrap_limit')
+
+class PositionType(enum.Enum):
+    CENTER = 'center'
+    LEFT = 'left'
+    RIGHT = 'right'
+    RANDOM = 'random'
+
+class TimePadIfNeeded(DualTransform):
+    """Pad lenght of the ecg to the minimal value.
+    """
+    def __init__(
+            self,
+            min_length=5000,
+            position=PositionType.CENTER,
+            border_mode=cv2.BORDER_CONSTANT,
+            fill_value=0.,
+            fill_mask_value=0,
+            always_apply=False,
+            p=1.0,
+        ):
+        """
+            :args:
+                min_length (int): minimal length to fill with padding
+                position (PositionType, str): position of padding
+                border_mode (OpenCV flag): OpenCV border mode
+                fill_value (int, float, None): padding value if border_mode is cv2.BORDER_CONSTANT
+                fill_mask_value (int, None): padding value for mask if border_mode is cv2.BORDER_CONSTANT
+        """
+        super(TimePadIfNeeded, self).__init__(always_apply, p)
+
+        self.min_length = M.prepare_non_negative_int(min_length, 'min_length')
+        self.position = PositionType(position)
+
+        self.border_mode = border_mode
+        self.fill_value = fill_value
+        self.fill_mask_value = fill_mask_value
+
+    def apply(self, ecg, left_pad, rigth_pad, **params):
+        return F.pad(ecg, left_pad, rigth_pad, self.border_mode, self.fill_value)
+
+    def apply_mask(self, mask, left_pad, rigth_pad, **params):
+        return F.pad(ecg, left_pad, rigth_pad, self.border_mode, self.fill_mask_value)
+
+    @property
+    def targets_as_params(self):
+        return ['ecg']
+
+    def get_params_dependent_on_targets(self, params):
+        length = params['ecg'].shape[0]
+
+        pad_length = max(0, self.min_length - length)
+
+        if self.position == PositionType.CENTER:
+            left_pad = pad_length // 2
+            rigth_pad = pad_length - left_pad
+        elif self.position == PositionType.LEFT:
+            left_pad = 0
+            rigth_pad = pad_length
+        elif self.position == PositionType.RIGHT:
+            left_pad = pad_length
+            rigth_pad = 0
+        else:
+            left_pad = np.random.randint(0, pad_length + 1)
+            rigth_pad = pad_length - left_pad
+
+        return {'left_pad': left_pad, 'rigth_pad': rigth_pad}
+
+    def get_transform_init_args_names(self):
+        return ('min_length', 'position', 'border_mode', 'fill_value', 'fill_mask_value')
