@@ -65,6 +65,8 @@ The list of all transforms:
 - [GaussBlur]()
 - [AmplitudeScale]()
 - [TimeCutout]()
+- [TimeCrop]()
+- [CenterTimeCrop]()
 - [RandomTimeCrop]()
 - [RandomTimeWrap]()
 - [TimePadIfNeeded]()

@@ -7,6 +7,12 @@ import ecgmentations.augmentations.functional as F
 
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
 
+class PositionType(enum.Enum):
+    CENTER = 'center'
+    LEFT = 'left'
+    RIGHT = 'right'
+    RANDOM = 'random'
+
 class TimeReverse(DualTransform):
     """Reverse the input ecg.
     """
@@ -313,31 +319,46 @@ class TimeCutout(DualTransform):
     def get_transform_init_args_names(self):
         return ('num_ranges', 'length_range', 'fill_value', 'mask_fill_value')
 
-class RandomTimeCrop(DualTransform):
-    """Randomly crop time region from the input ecg.
+class TimeCrop(DualTransform):
+    """Crop time region from the input ecg.
     """
     def __init__(
             self,
             length=5000,
+            position=PositionType.RANDOM,
             always_apply=False,
             p=1.0,
         ):
         """
             :args:
                 length (int): the length of cropped region
+                position (PositionType, str): position of padding
         """
-        super(RandomTimeCrop, self).__init__(always_apply, p)
+        super(TimeCrop, self).__init__(always_apply, p)
 
         self.length = M.prepare_float(length, 'length')
+        self.position = position
 
     def apply(self, ecg, left_bound, **params):
         return F.time_crop(ecg, left_bound, self.length)
 
     def get_params(self):
-        return {'left_bound': np.random.random()}
+        if self.position == PositionType.CENTER:
+            left_bound = 0.
+        elif self.position == PositionType.LEFT:
+            left_bound = 0.5
+        elif self.position == PositionType.RIGHT:
+            left_bound = 1.
+        else:
+            left_bound = np.random.random()
+
+        return {'left_bound': left_bound}
 
     def get_transform_init_args_names(self):
         return ('length', )
+
+CenterTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='center')
+RandomTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='random')
 
 class RandomTimeWrap(DualTransform):
     """Randomly stretch and squeeze contiguous segments of the input ecg
@@ -376,12 +397,6 @@ class RandomTimeWrap(DualTransform):
 
     def get_transform_init_args_names(self):
         return ('num_steps', 'wrap_limit')
-
-class PositionType(enum.Enum):
-    CENTER = 'center'
-    LEFT = 'left'
-    RIGHT = 'right'
-    RANDOM = 'random'
 
 class TimePadIfNeeded(DualTransform):
     """Pad lenght of the ecg to the minimal value.

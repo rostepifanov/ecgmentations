@@ -17,7 +17,9 @@ SHAPE_PRESERVED_TRANSFORMS = [
 ]
 
 SHAPE_UNPRESERVED_TRANSFORMS = [
+    E.TimeCrop,
     E.RandomTimeCrop,
+    E.CenterTimeCrop,
     E.TimePadIfNeeded,
 ]
 
