@@ -57,6 +57,7 @@ transformed_ecg = transformed['ecg']
 The list of time axis transforms:
 
 - [TimeReverse]()
+- [TimeShift]()
 - [RandomTimeWrap]()
 - [TimeCutout]()
 - [TimeCrop]()
