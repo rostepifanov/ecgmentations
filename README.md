@@ -54,9 +54,18 @@ transformed_ecg = transformed['ecg']
 
 ## List of augmentations
 
-The list of all transforms:
+The list of time axis transforms:
 
 - [TimeReverse]()
+- [RandomTimeWrap]()
+- [TimeCutout]()
+- [TimeCrop]()
+- [CenterTimeCrop]()
+- [RandomTimeCrop]()
+- [TimePadIfNeeded]()
+
+The list of other transforms:
+
 - [AmplitudeInvert]()
 - [ChannelShuffle]()
 - [ChannelDropout]()
@@ -64,12 +73,6 @@ The list of all transforms:
 - [Blur]()
 - [GaussBlur]()
 - [AmplitudeScale]()
-- [TimeCutout]()
-- [TimeCrop]()
-- [CenterTimeCrop]()
-- [RandomTimeCrop]()
-- [RandomTimeWrap]()
-- [TimePadIfNeeded]()
 
 ## Citing
 

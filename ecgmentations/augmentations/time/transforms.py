@@ -16,6 +16,148 @@ class TimeReverse(DualTransform):
     def get_transform_init_args_names(self):
         return tuple()
 
+class RandomTimeWrap(DualTransform):
+    """Randomly stretch and squeeze contiguous segments of the input ecg
+    """
+    def __init__(
+            self,
+            num_steps=5,
+            wrap_limit=0.05,
+            always_apply=False,
+            p=0.5,
+        ):
+        """
+            :args:
+                num_steps (int): count of grid cells on the ecg
+                wrap_limit (float): limit of stretching or squeezing
+        """
+        super(RandomTimeWrap, self).__init__(always_apply, p)
+
+        self.num_steps = M.prepare_non_negative_int(num_steps, 'num_steps')
+        self.wrap_limit = M.prepare_non_negative_float(wrap_limit, 'wrap_limit')
+
+    def apply(self, ecg, cells, ncells, **params):
+        return F.time_wrap(ecg, cells, ncells)
+
+    def get_params(self):
+        cells = np.linspace(0, 1, self.num_steps + 1)
+        ncells = np.linspace(0, 1, self.num_steps + 1)
+
+        if self.num_steps > 1:
+            directions = np.random.choice([-1, 1], size=self.num_steps - 1)
+            shifts = np.random.random(size=self.num_steps-1) * self.wrap_limit * 0.5
+
+            ncells[1:-1] += shifts * directions / (self.num_steps + 1)
+
+        return {'cells': cells, 'ncells': ncells}
+
+    def get_transform_init_args_names(self):
+        return ('num_steps', 'wrap_limit')
+
+class TimeCutout(DualTransform):
+    """Randomly cutout time ranges in the input ecg.
+    """
+    def __init__(
+            self,
+            num_ranges=(1, 5),
+            length_range=(0, 50),
+            fill_value=0.,
+            mask_fill_value=None,
+            always_apply=False,
+            p=0.5,
+        ):
+        """
+            :args:
+                num_ranges ((int, int)): number of cutout ranges
+                length_range ((int, int)): range for selecting cutout length
+                fill_value (float): value to fill cutouted ranges in the input ecg
+                mask_fill_value (int, None): value to fill cutouted ranges in the mask. if value is None, mask is not affected
+        """
+        super(TimeCutout, self).__init__(always_apply, p)
+
+        self.num_ranges = M.prepare_int_asymrange(num_ranges, 'num_ranges', 0)
+
+        self.min_num_ranges = num_ranges[0]
+        self.max_num_ranges = num_ranges[1]
+
+        self.length_range = M.prepare_int_asymrange(length_range, 'length_range', 0)
+
+        self.min_length_range = length_range[0]
+        self.max_length_range = length_range[1]
+
+        self.fill_value = M.prepare_float(fill_value, 'fill_value')
+        self.mask_fill_value = mask_fill_value
+
+    def apply(self, ecg, cutouts, **params):
+        return F.time_cutout(ecg, cutouts, self.fill_value)
+
+    def apply_to_mask(self, mask, cutouts, **params):
+        if self.mask_fill_value is None:
+            return mask
+        else:
+            return F.time_cutout(ecg, cutouts, self.mask_fill_value)
+
+    @property
+    def targets_as_params(self):
+        return ['ecg']
+
+    def get_params_dependent_on_targets(self, params):
+        length = params['ecg'].shape[0]
+
+        cutouts = []
+
+        for _ in range(np.random.randint(self.min_num_ranges, self.max_num_ranges + 1)):
+            cutout_length = np.random.randint(self.min_length_range, self.max_length_range + 1)
+            cutout_start = np.random.randint(0, length - cutout_length + 1)
+
+            cutouts.append((cutout_start, cutout_length))
+
+        return {'cutouts': cutouts}
+
+    def get_transform_init_args_names(self):
+        return ('num_ranges', 'length_range', 'fill_value', 'mask_fill_value')
+
+CenterTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='center')
+RandomTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='random')
+
+class TimeCrop(DualTransform):
+    """Crop time region from the input ecg.
+    """
+    def __init__(
+            self,
+            length=5000,
+            position=PositionType.RANDOM,
+            always_apply=False,
+            p=1.0,
+        ):
+        """
+            :args:
+                length (int): the length of cropped region
+                position (PositionType, str): position of padding
+        """
+        super(TimeCrop, self).__init__(always_apply, p)
+
+        self.length = M.prepare_int(length, 'length')
+        self.position = PositionType(position)
+
+    def apply(self, ecg, left_bound, **params):
+        return F.time_crop(ecg, left_bound, self.length)
+
+    def get_params(self):
+        if self.position == PositionType.LEFT:
+            left_bound = 1.0
+        elif self.position == PositionType.CENTER:
+            left_bound = 0.5
+        elif self.position == PositionType.RIGHT:
+            left_bound = 0.0
+        else:
+            left_bound = np.random.random()
+
+        return {'left_bound': left_bound}
+
+    def get_transform_init_args_names(self):
+        return ('length', 'position')
+
 class TimePadIfNeeded(DualTransform):
     """Pad lenght of the ecg to the minimal value.
     """
@@ -78,44 +220,3 @@ class TimePadIfNeeded(DualTransform):
 
     def get_transform_init_args_names(self):
         return ('min_length', 'position', 'border_mode', 'fill_value', 'fill_mask_value')
-
-class TimeCrop(DualTransform):
-    """Crop time region from the input ecg.
-    """
-    def __init__(
-            self,
-            length=5000,
-            position=PositionType.RANDOM,
-            always_apply=False,
-            p=1.0,
-        ):
-        """
-            :args:
-                length (int): the length of cropped region
-                position (PositionType, str): position of padding
-        """
-        super(TimeCrop, self).__init__(always_apply, p)
-
-        self.length = M.prepare_int(length, 'length')
-        self.position = PositionType(position)
-
-    def apply(self, ecg, left_bound, **params):
-        return F.time_crop(ecg, left_bound, self.length)
-
-    def get_params(self):
-        if self.position == PositionType.LEFT:
-            left_bound = 1.0
-        elif self.position == PositionType.CENTER:
-            left_bound = 0.5
-        elif self.position == PositionType.RIGHT:
-            left_bound = 0.0
-        else:
-            left_bound = np.random.random()
-
-        return {'left_bound': left_bound}
-
-    def get_transform_init_args_names(self):
-        return ('length', 'position')
-
-CenterTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='center')
-RandomTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='random')
