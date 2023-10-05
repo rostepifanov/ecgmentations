@@ -174,7 +174,7 @@ class TimePadIfNeeded(DualTransform):
         """
             :args:
                 min_length (int): minimal length to fill with padding
-                position (PositionType, str): position of padding
+                position (PositionType, str): position of ecg
                 border_mode (OpenCV flag): OpenCV border mode
                 fill_value (int, float, None): padding value if border_mode is cv2.BORDER_CONSTANT
                 fill_mask_value (int, None): padding value for mask if border_mode is cv2.BORDER_CONSTANT
