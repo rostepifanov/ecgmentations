@@ -6,6 +6,21 @@ import ecgmentations.augmentations.misc as M
 def time_reverse(ecg):
     return np.flip(ecg, axis=0)
 
+def time_shift(ecg, shift, border_mode, fill_value):
+    ecg = np.array(ecg)
+    length = ecg.shape[0]
+
+    pad_ = int(length*shift)
+
+    if pad_ > 0:
+        ecg = pad(ecg, pad_, 0, border_mode, fill_value)
+        ecg = ecg[:-pad_]
+    elif pad_ < 0:
+        ecg = pad(ecg, 0, -pad_, border_mode, fill_value)
+        ecg = ecg[-pad_:]
+
+    return ecg
+
 def amplitude_invert(ecg):
     return np.negative(ecg)
 

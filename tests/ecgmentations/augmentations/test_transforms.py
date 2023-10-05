@@ -12,6 +12,7 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.GaussBlur,
     E.AmplitudeScale,
     E.TimeReverse,
+    E.TimeShift,
     E.RandomTimeWrap,
     E.TimeCutout,
 ]

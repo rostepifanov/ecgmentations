@@ -16,6 +16,47 @@ class TimeReverse(DualTransform):
     def get_transform_init_args_names(self):
         return tuple()
 
+class TimeShift(DualTransform):
+    """Shift the input ecg along time axis.
+    """
+    def __init__(
+            self,
+            shift_limit=0.05,
+            border_mode=cv2.BORDER_CONSTANT,
+            fill_value=0.,
+            fill_mask_value=0,
+            always_apply=False,
+            p=0.5,
+        ):
+        """
+            :args:
+                shift_limit (float): limit of shifting
+                border_mode (OpenCV flag): OpenCV border mode
+                fill_value (int, float, None): padding value if border_mode is cv2.BORDER_CONSTANT
+                fill_mask_value (int, None): padding value for mask if border_mode is cv2.BORDER_CONSTANT
+        """
+        super(TimeShift, self).__init__(always_apply, p)
+
+        self.shift_limit = M.prepare_non_negative_float(shift_limit, 'shift_limit')
+
+        self.border_mode = border_mode
+        self.fill_value = M.prepare_float(fill_value, 'fill_value')
+        self.fill_mask_value = M.prepare_int(fill_mask_value, 'fill_mask_value')
+
+    def apply(self, ecg, shift, **params):
+        return F.time_shift(ecg, shift, self.border_mode, self.fill_value)
+
+    def apply_mask(self, mask, shift, **params):
+        return F.time_shift(ecg, shift, self.border_mode, self.fill_mask_value)
+
+    def get_params(self):
+        shift = np.random.random() * self.shift_limit
+
+        return {'shift': shift}
+
+    def get_transform_init_args_names(self):
+        return ('shift_limit', 'border_mode', 'fill_value', 'fill_mask_value')
+
 class RandomTimeWrap(DualTransform):
     """Randomly stretch and squeeze contiguous segments of the input ecg
     """
@@ -185,8 +226,8 @@ class TimePadIfNeeded(DualTransform):
         self.position = PositionType(position)
 
         self.border_mode = border_mode
-        self.fill_value = fill_value
-        self.fill_mask_value = fill_mask_value
+        self.fill_value = M.prepare_float(fill_value, 'fill_value')
+        self.fill_mask_value = M.prepare_int(fill_mask_value, 'fill_mask_value')
 
     def apply(self, ecg, left_pad, rigth_pad, **params):
         return F.pad(ecg, left_pad, rigth_pad, self.border_mode, self.fill_value)
