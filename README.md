@@ -58,6 +58,7 @@ The list of time axis transforms:
 
 - [TimeReverse]()
 - [TimeShift]()
+- [TimeSegmentShuffle]()
 - [RandomTimeWrap]()
 - [TimeCutout]()
 - [TimeCrop]()

@@ -112,3 +112,13 @@ def test_time_crop_CASE_large_length():
 
     with pytest.raises(ValueError):
         F.time_crop(ecg, left_bound, crop_length)
+
+def time_segment_swap_CASE_default():
+    ecg = np.array([[1, 2, 3, 4, 5, 6], [6, 5, 4, 3, 2, 1]]).T
+
+    segment_order = [2, 0, 1]
+
+    output = F.time_segment_swap(ecg, segment_order)
+    expected = np.array([[5, 6, 1, 2, 3, 4], [2, 1, 6, 5, 4, 3]]).T
+
+    assert pytest.approx(output) == expected
