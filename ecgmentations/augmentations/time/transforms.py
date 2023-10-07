@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 import ecgmentations.augmentations.misc as M
-import ecgmentations.augmentations.functional as F
+import ecgmentations.augmentations.time.functional as F
 
 from ecgmentations.augmentations.enum import PositionType
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform

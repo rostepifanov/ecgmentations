@@ -1,10 +1,3 @@
-from itertools import tee
-
-def pairwise(iterable):
-    first, second = tee(iterable)
-    next(second, None)
-    yield from zip(first, second)
-
 def _non_negative_number(param, name):
     if param < 0:
         raise ValueError('{} should be non negative.'.format(name))
