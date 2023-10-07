@@ -112,3 +112,17 @@ def time_wrap(ecg, cells, ncells):
         )
 
     return necg
+
+def time_segment_swap(ecg, segment_order):
+    length = ecg.shape[0]
+    time_point_order = np.arange(length)
+
+    num_segments = len(segment_order)
+    time_point_order = np.array(
+        np.array_split(time_point_order, num_segments)
+    )[segment_order]
+
+    ecg = ecg[time_point_order]
+    ecg.shape = (length, -1)
+
+    return ecg

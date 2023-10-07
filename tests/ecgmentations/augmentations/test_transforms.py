@@ -13,6 +13,7 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.AmplitudeScale,
     E.TimeReverse,
     E.TimeShift,
+    E.TimeSegmentShuffle,
     E.RandomTimeWrap,
     E.TimeCutout,
 ]

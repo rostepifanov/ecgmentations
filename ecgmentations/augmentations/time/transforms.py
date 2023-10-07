@@ -57,6 +57,35 @@ class TimeShift(DualTransform):
     def get_transform_init_args_names(self):
         return ('shift_limit', 'border_mode', 'fill_value', 'fill_mask_value')
 
+class TimeSegmentShuffle(DualTransform):
+    """Randomly shuffle of the input ecg segments
+    """
+    def __init__(
+            self,
+            num_segments=5,
+            always_apply=False,
+            p=0.5,
+        ):
+        """
+            :args:
+                num_segments (int): count of grid cells on the ecg
+        """
+        super(TimeSegmentShuffle, self).__init__(always_apply, p)
+
+        self.num_segments = M.prepare_non_negative_int(num_segments, 'num_segments')
+
+    def apply(self, ecg, segment_order, **params):
+        return F.time_segment_swap(ecg, segment_order)
+
+    def get_params(self):
+        segment_order = np.arange(self.num_segments)
+        np.random.shuffle(segment_order)
+
+        return {'segment_order': segment_order}
+
+    def get_transform_init_args_names(self):
+        return ('num_segments', )
+
 class RandomTimeWrap(DualTransform):
     """Randomly stretch and squeeze contiguous segments of the input ecg
     """
