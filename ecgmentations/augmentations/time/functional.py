@@ -93,8 +93,16 @@ def pad(ecg, left_pad, rigth_pad, border_mode, fill_value):
     else:
         raise ValueError('Get invalide border_mode: {}'.format(border_mode))
 
+    if border_mode == 'constant':
+        kwargs = { 'constant_values': fill_value }
+    else:
+        kwargs = dict()
+
     ecg = np.apply_along_axis(
-        lambda ecg: np.pad(ecg, pad_width=(left_pad, rigth_pad), mode=border_mode, constant_values=fill_value),
+        lambda ecg: np.pad( ecg,
+                            pad_width=(left_pad, rigth_pad),
+                            mode=border_mode,
+                            **kwargs ),
         axis=0,
         arr=ecg
     )
