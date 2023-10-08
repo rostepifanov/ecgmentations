@@ -8,4 +8,5 @@ from ecgmentations.augmentations.transforms import (
     Blur,
     GaussBlur,
     AmplitudeScale,
+    PowerlineNoise,
 )

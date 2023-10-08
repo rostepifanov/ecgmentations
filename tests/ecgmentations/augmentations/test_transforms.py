@@ -16,6 +16,7 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.TimeSegmentShuffle,
     E.RandomTimeWrap,
     E.TimeCutout,
+    E.PowerlineNoise,
 ]
 
 SHAPE_UNPRESERVED_TRANSFORMS = [
