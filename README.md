@@ -44,7 +44,7 @@ transform = E.Sequential([
     E.ChannelShuffle(p=0.06),
 ])
 
-# Create example ecg
+# Create example ecg (length, nchannels)
 ecg = np.ones((12, 5000)).T
 
 # Augment an ecg
