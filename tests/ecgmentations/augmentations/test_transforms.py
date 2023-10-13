@@ -4,7 +4,6 @@ import numpy as np
 import ecgmentations as E
 
 SHAPE_PRESERVED_TRANSFORMS = [
-    E.TimeReverse,
     E.AmplitudeInvert,
     E.ChannelShuffle,
     E.ChannelDropout,
@@ -12,12 +11,19 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.Blur,
     E.GaussBlur,
     E.AmplitudeScale,
-    E.TimeCutout,
+    E.TimeReverse,
+    E.TimeShift,
+    E.TimeSegmentShuffle,
     E.RandomTimeWrap,
+    E.TimeCutout,
+    E.PowerlineNoise,
 ]
 
 SHAPE_UNPRESERVED_TRANSFORMS = [
-    E.RandomTimeCrop
+    E.TimeCrop,
+    E.RandomTimeCrop,
+    E.CenterTimeCrop,
+    E.TimePadIfNeeded,
 ]
 
 @pytest.mark.parametrize('transform', SHAPE_PRESERVED_TRANSFORMS + SHAPE_UNPRESERVED_TRANSFORMS)
@@ -44,3 +50,6 @@ def test_Transform_CASE_call(transform):
     assert pytest.approx(tecg) != ecg
 
     assert tmask.shape == mask.shape
+
+    if isinstance(transform, E.EcgOnlyTransform):
+        assert np.all(tmask == mask)
