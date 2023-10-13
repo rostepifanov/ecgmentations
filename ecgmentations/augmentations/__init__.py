@@ -1,5 +1,6 @@
+from ecgmentations.augmentations.enum import PositionType
+from ecgmentations.augmentations.time.transforms import *
 from ecgmentations.augmentations.transforms import (
-    TimeReverse,
     AmplitudeInvert,
     ChannelShuffle,
     ChannelDropout,
@@ -7,7 +8,5 @@ from ecgmentations.augmentations.transforms import (
     Blur,
     GaussBlur,
     AmplitudeScale,
-    TimeCutout,
-    RandomTimeCrop,
-    RandomTimeWrap,
+    PowerlineNoise,
 )

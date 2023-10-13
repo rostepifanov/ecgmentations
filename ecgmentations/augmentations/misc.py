@@ -1,11 +1,25 @@
-from itertools import tee
+def _non_negative_number(param, name):
+    if param < 0:
+        raise ValueError('{} should be non negative.'.format(name))
 
-def pairwise(iterable):
-    first, second = tee(iterable)
-    next(second, None)
-    yield from zip(first, second)
+    return param
 
-def prepare_float(param, name):
+def _prepare_int(param, name, check):
+    if not isinstance(param, int):
+        raise ValueError(
+            '{} must be scalar (int).'.format(
+                name
+            )
+        )
+
+    param = int(param)
+
+    return check(param, name)
+
+prepare_int = lambda param, name: _prepare_int(param, name, lambda x, _: x)
+prepare_non_negative_int = lambda param, name: _prepare_int(param, name, _non_negative_number)
+
+def _prepare_float(param, name, check):
     if not isinstance(param, (float, int)):
         raise ValueError(
             '{} must be scalar (float).'.format(
@@ -13,7 +27,12 @@ def prepare_float(param, name):
             )
         )
 
-    return float(param)
+    param = float(param)
+
+    return check(param, name)
+
+prepare_float = lambda param, name: _prepare_float(param, name, lambda x, _: x)
+prepare_non_negative_float = lambda param, name: _prepare_float(param, name, _non_negative_number)
 
 def prepare_int_asymrange(param, name, low):
     if isinstance(param, int):

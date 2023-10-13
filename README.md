@@ -1,10 +1,14 @@
 # Ecgmentations
 
+![Python version support](https://img.shields.io/pypi/pyversions/ecgmentations)
+[![PyPI version](https://badge.fury.io/py/ecgmentations.svg)](https://badge.fury.io/py/ecgmentations)
+[![Downloads](https://pepy.tech/badge/ecgmentations/month)](https://pepy.tech/project/ecgmentations?versions=0.0.*)
+
 Ecgmentations is a Python library for ecg augmentation. Ecg augmentation is used in deep learning to increase the quality of trained models. The purpose of ecg augmentation is to create new training samples from the existing data.
 
 Here is an example of how you can apply some augmentations from Ecgmentations to create new ecgs from the original one:
 
-![preview](images/preview.png)
+![preview](https://raw.githubusercontent.com/rostepifanov/ecgmentations/main/images/preview.png)
 
 ## Table of contents
 - [Authors](#authors)
@@ -40,7 +44,7 @@ transform = E.Sequential([
     E.ChannelShuffle(p=0.06),
 ])
 
-# Create example ecg
+# Create example ecg (length, nchannels)
 ecg = np.ones((12, 5000)).T
 
 # Augment an ecg
@@ -50,9 +54,20 @@ transformed_ecg = transformed['ecg']
 
 ## List of augmentations
 
-The list of all transforms:
+The list of time axis transforms:
 
 - [TimeReverse]()
+- [TimeShift]()
+- [TimeSegmentShuffle]()
+- [RandomTimeWrap]()
+- [TimeCutout]()
+- [TimeCrop]()
+- [CenterTimeCrop]()
+- [RandomTimeCrop]()
+- [TimePadIfNeeded]()
+
+The list of other transforms:
+
 - [AmplitudeInvert]()
 - [ChannelShuffle]()
 - [ChannelDropout]()
@@ -60,9 +75,7 @@ The list of all transforms:
 - [Blur]()
 - [GaussBlur]()
 - [AmplitudeScale]()
-- [TimeCutout]()
-- [RandomTimeCrop]()
-- [RandomTimeWrap]()
+- [PowerlineNoise]()
 
 ## Citing
 
