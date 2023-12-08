@@ -78,6 +78,7 @@ The list of other transforms:
 - [PowerlineNoise]()
 - [SinePulse]()
 - [SquarePulse]()
+- [RespirationNoise]()
 
 ## Citing
 

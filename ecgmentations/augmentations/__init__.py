@@ -11,4 +11,5 @@ from ecgmentations.augmentations.transforms import (
     PowerlineNoise,
     SinePulse,
     SquarePulse,
+    RespirationNoise,
 )

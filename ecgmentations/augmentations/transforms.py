@@ -52,7 +52,7 @@ class ChannelDropout(EcgOnlyTransform):
         """
         super(ChannelDropout, self).__init__(always_apply, p)
 
-        self.channel_drop_range = M.prepare_int_asymrange(channel_drop_range, 'channel_drop_range',1)
+        self.channel_drop_range = M.prepare_int_asymrange(channel_drop_range, 'channel_drop_range', 1)
 
         self.min_drop_channels = channel_drop_range[0]
         self.max_drop_channels = channel_drop_range[1]
@@ -294,7 +294,7 @@ class SinePulse(EcgOnlyTransform):
             self,
             ecg_frequency=500.,
             pulse_frequency_limit=1.,
-            amplitude_limit=1., #mV
+            amplitude_limit=1.,
             always_apply=False,
             p=0.5
         ):
@@ -370,4 +370,47 @@ class SquarePulse(EcgOnlyTransform):
 class RespirationNoise(EcgOnlyTransform):
     """Add respiration noise to the input ecg
     """
-    ...
+    def __init__(
+            self,
+            ecg_frequency=500.,
+            breathing_rate_range=(12, 18),
+            amplitude_limit=1,
+            always_apply=False,
+            p=0.5
+        ):
+        """
+            :NOTE:
+                breathing_rate:
+                    0.333 Hz "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
+                    0.333 equals to 20 bpm
+
+                amplitude_limit:
+                    1 mV (defautl value) "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
+
+            :args:
+                ecg_frequency (float): frequency of the input ecg
+                breathing_rate_range ((int, int)): breathing rate range in bpm
+                amplitude_limit (float): limit of noise amplitude
+        """
+        super(RespirationNoise, self).__init__(always_apply, p)
+
+        self.ecg_frequency = M.prepare_non_negative_float(ecg_frequency, 'ecg_frequency')
+        self.breathing_rate_range = M.prepare_int_asymrange(breathing_rate_range, 'breathing_rate_range', 1)
+
+        self.min_breathing_rate_range = breathing_rate_range[0]
+        self.max_breathing_rate_range = breathing_rate_range[1]
+
+        self.amplitude_limit = M.prepare_non_negative_float(amplitude_limit, 'amplitude_limit')
+
+    def apply(self, ecg, amplitude, frequency, phase, **params):
+        return F.add_sine_pulse(ecg, self.ecg_frequency, amplitude, frequency, phase)
+
+    def get_params(self):
+        amplitude = np.random.random() * self.amplitude_limit
+        frequency = np.random.randint(self.min_breathing_rate_range, self.max_breathing_rate_range + 1) / 60
+        phase = np.random.random() * 2 * np.pi
+
+        return {'amplitude': amplitude, 'frequency': frequency, 'phase': phase}
+
+    def get_transform_init_args_names(self):
+        return ('ecg_frequency', 'breathing_rate_range', 'amplitude_limit')

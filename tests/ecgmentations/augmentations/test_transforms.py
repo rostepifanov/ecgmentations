@@ -19,6 +19,7 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.PowerlineNoise,
     E.SinePulse,
     E.SquarePulse,
+    E.RespirationNoise,
 ]
 
 SHAPE_UNPRESERVED_TRANSFORMS = [
