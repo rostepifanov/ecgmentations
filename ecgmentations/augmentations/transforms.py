@@ -89,15 +89,16 @@ class GaussNoise(EcgOnlyTransform):
     def __init__(
             self,
             mean=0.,
-            variance=0.01, # mV
+            variance=0.01,
             per_channel=True,
             always_apply=False,
             p=0.5
         ):
         """
             :NOTE:
-                default values is taken from paper "Self-supervised representation learning from 12-lead ECG data"
-                in the "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification" is used varience 0.02
+                variance:
+                    0.01 mV (default) "Self-supervised representation learning from 12-lead ECG data"
+                    0.02 mV "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
                 mean (float): mean of gaussian noise
@@ -177,7 +178,7 @@ class GaussBlur(EcgOnlyTransform):
         """
             :NOTE:
                 transformation is similar to gaussian blur in paper "Self-supervised representation learning from
-                12-lead ECG data" with variance equals one and kernel size equals
+                12-lead ECG data" with variance equals one and kernel size equals five
 
                 code kernel is about of (0.05, 0.25, 0.40, 0.25, 0.05)
                 paper kernel is (0.10, 0.20, 0.40, 0.20, 0.10)
@@ -249,16 +250,19 @@ class PowerlineNoise(EcgOnlyTransform):
             self,
             ecg_frequency=500.,
             powerline_frequency=50.,
-            amplitude_limit=0.3, #mV
+            amplitude_limit=0.3,
             always_apply=False,
             p=0.5
         ):
         """
             :NOTE:
-                powerline frequency for Europe is 50 Hz, and 60 Hz is for USA or Asia
+                powerline frequency:
+                    50 Hz is for Europe
+                    60 Hz is for USA or Asia
 
-                default value of amplitude_limit is taken from paper "IIR digital filter design for powerline
-                noise cancellation of ECG signal using arduino platform"
+                amplitude_limit:
+                    0.3 mV (defautl value) "IIR digital filter design for powerline noise cancellation of ECG signal using arduino platform"
+                    0.333 mV "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
 
             :args:
                 ecg_frequency (float): frequency of the input ecg
@@ -284,7 +288,7 @@ class PowerlineNoise(EcgOnlyTransform):
         return ('ecg_frequency', 'powerline_frequency', 'amplitude_limit')
 
 class SinePulse(EcgOnlyTransform):
-    """Add sine pulse on the input ecg.
+    """Add sine pulse to the input ecg.
     """
     def __init__(
             self,
@@ -324,13 +328,13 @@ class SinePulse(EcgOnlyTransform):
         return ('ecg_frequency', 'pulse_frequency_limit', 'amplitude_limit')
 
 class SquarePulse(EcgOnlyTransform):
-    """Add square pulse on the input ecg.
+    """Add square pulse to the input ecg.
     """
     def __init__(
             self,
             ecg_frequency=500.,
             pulse_frequency_limit=5.,
-            amplitude_limit=0.02, #mV
+            amplitude_limit=0.02,
             always_apply=False,
             p=0.5
         ):
@@ -362,3 +366,8 @@ class SquarePulse(EcgOnlyTransform):
 
     def get_transform_init_args_names(self):
         return ('ecg_frequency', 'pulse_frequency_limit', 'amplitude_limit')
+
+class RespirationNoise(EcgOnlyTransform):
+    """Add respiration noise to the input ecg
+    """
+    ...
