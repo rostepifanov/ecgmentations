@@ -97,6 +97,7 @@ class GaussNoise(EcgOnlyTransform):
         """
             :NOTE:
                 default values is taken from paper "Self-supervised representation learning from 12-lead ECG data"
+                in the "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification" is used varience 0.02
 
             :args:
                 mean (float): mean of gaussian noise
