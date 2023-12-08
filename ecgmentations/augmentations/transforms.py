@@ -283,7 +283,6 @@ class PowerlineNoise(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('ecg_frequency', 'powerline_frequency', 'amplitude_limit')
 
-
 class SinePulse(EcgOnlyTransform):
     """Add sine pulse on the input ecg.
     """
@@ -313,6 +312,46 @@ class SinePulse(EcgOnlyTransform):
 
     def apply(self, ecg, amplitude, frequency, phase, **params):
         return F.add_sine_pulse(ecg, self.ecg_frequency, amplitude, frequency, phase)
+
+    def get_params(self):
+        amplitude = np.random.random() * self.amplitude_limit
+        frequency = np.random.random( ) * self.pulse_frequency_limit
+        phase = np.random.random() * 2 * np.pi
+
+        return {'amplitude': amplitude, 'frequency': frequency, 'phase': phase}
+
+    def get_transform_init_args_names(self):
+        return ('ecg_frequency', 'pulse_frequency_limit', 'amplitude_limit')
+
+class SquarePulse(EcgOnlyTransform):
+    """Add square pulse on the input ecg.
+    """
+    def __init__(
+            self,
+            ecg_frequency=500.,
+            pulse_frequency_limit=5.,
+            amplitude_limit=0.02, #mV
+            always_apply=False,
+            p=0.5
+        ):
+        """
+            :NOTE:
+                default value of pulse_frequency_ratio_range and amplitude_limit is taken from paper "RandECG: Data Augmentation
+                for Deep Neural Network Based ECG Classification"
+
+            :args:
+                ecg_frequency (float): frequency of the input ecg
+                pulse_frequency_limit (float): limit of pulse frequency
+                amplitude_limit (float): limit of pulse amplitude
+        """
+        super(SquarePulse, self).__init__(always_apply, p)
+
+        self.ecg_frequency = M.prepare_non_negative_float(ecg_frequency, 'ecg_frequency')
+        self.pulse_frequency_limit = M.prepare_non_negative_float(pulse_frequency_limit, 'pulse_frequency_limit')
+        self.amplitude_limit = M.prepare_non_negative_float(amplitude_limit, 'amplitude_limit')
+
+    def apply(self, ecg, amplitude, frequency, phase, **params):
+        return F.add_square_pulse(ecg, self.ecg_frequency, amplitude, frequency, phase)
 
     def get_params(self):
         amplitude = np.random.random() * self.amplitude_limit

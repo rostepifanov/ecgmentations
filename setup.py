@@ -2,7 +2,7 @@ import setuptools
 
 from pathlib import Path
 
-INSTALL_REQUIRES = ['numpy>=1.20.0', 'opencv-python-headless>=4.1.1']
+INSTALL_REQUIRES = ['numpy>=1.20.0', 'scipy>=1.10.1', 'opencv-python-headless>=4.1.1']
 
 def get_version():
     locals_ = dict()

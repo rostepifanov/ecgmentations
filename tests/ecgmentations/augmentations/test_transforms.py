@@ -18,6 +18,7 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.TimeCutout,
     E.PowerlineNoise,
     E.SinePulse,
+    E.SquarePulse,
 ]
 
 SHAPE_UNPRESERVED_TRANSFORMS = [
