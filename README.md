@@ -76,6 +76,7 @@ The list of other transforms:
 - [GaussBlur]()
 - [AmplitudeScale]()
 - [PowerlineNoise]()
+- [SinePulse]()
 
 ## Citing
 

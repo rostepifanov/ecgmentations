@@ -34,7 +34,7 @@ def conv(ecg, kernel, border_mode, fill_value):
 def amplitude_scale(ecg, scaling_factor):
     return ecg * scaling_factor
 
-def add_harmonic(ecg, ecg_frequency, amplitude, frequency, phase):
+def add_sine_pulse(ecg, ecg_frequency, amplitude, frequency, phase):
     length = ecg.shape[0]
 
     t = np.linspace(0, length / ecg_frequency, length)

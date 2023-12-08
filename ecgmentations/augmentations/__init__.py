@@ -9,4 +9,5 @@ from ecgmentations.augmentations.transforms import (
     GaussBlur,
     AmplitudeScale,
     PowerlineNoise,
+    SinePulse,
 )
