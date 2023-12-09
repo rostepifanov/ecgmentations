@@ -58,5 +58,3 @@ def add_square_pulse(ecg, ecg_frequency, amplitude, frequency, phase):
     ecg = ecg + amplitude * sp.signal.square(2 * np.pi * frequency * t + phase)[:, None]
 
     return ecg
-
-sp.signal.square
