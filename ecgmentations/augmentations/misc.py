@@ -101,3 +101,46 @@ def prepare_float_symrange(param, name):
         )
 
     return tuple(param)
+
+def prepare_float_asymrange(param, name, low):
+    if isinstance(param, float):
+        if param >= low:
+            param = (low, param)
+        else:
+            raise ValueError(
+                'Invalid value of {}. Got {} that less than {}.'.format(
+                    name, param, low
+                )
+            )
+    elif isinstance(param, (tuple, list)):
+        if len(param) == 2:
+            if not (list(map(type, param)) == [float, float]):
+                raise ValueError(
+                    '{} must be tuple (float, float).'.format(
+                        name
+                    )
+                )
+
+            if param[0] > param[1]:
+                param = (param[1], param[0])
+
+            if param[0] < low:
+                raise ValueError(
+                    'Invalid value of {}. Got: {} that less than {}.'.format(
+                        name, param, low
+                    )
+                )
+        else:
+            raise ValueError(
+                'Invalid value of {}. Got {}'.format(
+                    name, param
+                )
+            )
+    else:
+        raise ValueError(
+            '{} must be either scalar (float) or tuple (float, float).'.format(
+                name
+            )
+        )
+
+    return tuple(param)
