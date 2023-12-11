@@ -187,11 +187,8 @@ class TimeCutout(DualTransform):
     def get_transform_init_args_names(self):
         return ('num_ranges', 'length_range', 'fill_value', 'mask_fill_value')
 
-CenterTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='center')
-RandomTimeCrop = lambda *args, **kwargs: TimeCrop(*args, **kwargs, position='random')
-
 class TimeCrop(DualTransform):
-    """Crop time region from the input ecg.
+    """Crop time segment from the input ecg.
     """
     def __init__(
             self,
@@ -202,8 +199,8 @@ class TimeCrop(DualTransform):
         ):
         """
             :args:
-                length (int): the length of cropped region
-                position (PositionType, str): position of padding
+                length (int): the length of cropped time segment
+                position (PositionType, str): position of cropped time segment
         """
         super(TimeCrop, self).__init__(always_apply, p)
 
@@ -227,6 +224,42 @@ class TimeCrop(DualTransform):
 
     def get_transform_init_args_names(self):
         return ('length', 'position')
+
+class CenterTimeCrop(TimeCrop):
+    """Crop time segment to the center of the input ecg.
+    """
+    def __init__(
+            self,
+            length=5000,
+            always_apply=False,
+            p=1.0,
+        ):
+        """
+            :args:
+                length (int): the length of cropped region
+        """
+        super(CenterTimeCrop, self).__init__(length, PositionType.CENTER, always_apply, p)
+
+    def get_transform_init_args_names(self):
+        return ('length', )
+
+class RandomTimeCrop(TimeCrop):
+    """Crop a random time segment of the input ecg.
+    """
+    def __init__(
+            self,
+            length=5000,
+            always_apply=False,
+            p=1.0,
+        ):
+        """
+            :args:
+                length (int): the length of cropped region
+        """
+        super(RandomTimeCrop, self).__init__(length, PositionType.RANDOM, always_apply, p)
+
+    def get_transform_init_args_names(self):
+        return ('length', )
 
 class TimePadIfNeeded(DualTransform):
     """Pad lenght of the ecg to the minimal value.
