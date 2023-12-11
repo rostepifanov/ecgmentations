@@ -256,8 +256,11 @@ class SinePulse(EcgOnlyTransform):
         ):
         """
             :NOTE:
-                default value of pulse_frequency_ratio_range and amplitude_limit is taken from paper "RandECG: Data Augmentation
-                for Deep Neural Network Based ECG Classification"
+                amplitude_limit:
+                    1 mV (default) "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
+
+                pulse_frequency_range:
+                    0 - 1 Hz (default) "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
                 ecg_frequency (float): frequency of the input ecg
@@ -306,7 +309,7 @@ class PowerlineNoise(SinePulse):
                     60 Hz is for USA or Asia
 
                 amplitude_limit:
-                    0.3 mV (defautl value) "IIR digital filter design for powerline noise cancellation of ECG signal using arduino platform"
+                    0.3 mV (default) "IIR digital filter design for powerline noise cancellation of ECG signal using arduino platform"
                     0.333 mV "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
 
             :args:
@@ -340,7 +343,7 @@ class RespirationNoise(SinePulse):
                     0.333 equals to 20 bpm
 
                 amplitude_limit:
-                    1 mV (defautl value) "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
+                    1 mV (default) "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
 
             :args:
                 ecg_frequency (float): frequency of the input ecg
@@ -368,8 +371,11 @@ class SquarePulse(EcgOnlyTransform):
         ):
         """
             :NOTE:
-                default value of pulse_frequency_ratio_range and amplitude_limit is taken from paper "RandECG: Data Augmentation
-                for Deep Neural Network Based ECG Classification"
+                amplitude_limit:
+                    0.02 mV (default) "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
+
+                pulse_frequency_range:
+                    0 - 5 Hz (default) "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
                 ecg_frequency (float): frequency of the input ecg
