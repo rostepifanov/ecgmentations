@@ -31,8 +31,6 @@ SHAPE_UNPRESERVED_TRANSFORMS = [
 
 @pytest.mark.parametrize('transform', SHAPE_PRESERVED_TRANSFORMS + SHAPE_UNPRESERVED_TRANSFORMS)
 def test_Transform_CASE_repr(transform):
-    ecg = np.ones((12, 5000)).T
-
     transform = transform(always_apply=True)
     repr = str(transform)
 
