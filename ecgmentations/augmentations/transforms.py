@@ -52,7 +52,7 @@ class ChannelDropout(EcgOnlyTransform):
         """
         super(ChannelDropout, self).__init__(always_apply, p)
 
-        self.channel_drop_range = M.prepare_int_asymrange(channel_drop_range, 'channel_drop_range',1)
+        self.channel_drop_range = M.prepare_int_asymrange(channel_drop_range, 'channel_drop_range', 1)
 
         self.min_drop_channels = channel_drop_range[0]
         self.max_drop_channels = channel_drop_range[1]
@@ -89,14 +89,16 @@ class GaussNoise(EcgOnlyTransform):
     def __init__(
             self,
             mean=0.,
-            variance=0.01, # mV
+            variance=0.01,
             per_channel=True,
             always_apply=False,
             p=0.5
         ):
         """
             :NOTE:
-                default values is taken from paper "Self-supervised representation learning from 12-lead ECG data"
+                variance:
+                    0.01 mV (default) "Self-supervised representation learning from 12-lead ECG data"
+                    0.02 mV "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
                 mean (float): mean of gaussian noise
@@ -176,7 +178,7 @@ class GaussBlur(EcgOnlyTransform):
         """
             :NOTE:
                 transformation is similar to gaussian blur in paper "Self-supervised representation learning from
-                12-lead ECG data" with variance equals one and kernel size equals
+                12-lead ECG data" with variance equals one and kernel size equals five
 
                 code kernel is about of (0.05, 0.25, 0.40, 0.25, 0.05)
                 paper kernel is (0.10, 0.20, 0.40, 0.20, 0.10)
@@ -240,44 +242,3 @@ class AmplitudeScale(EcgOnlyTransform):
 
     def get_transform_init_args_names(self):
         return ('scaling_range', )
-
-class PowerlineNoise(EcgOnlyTransform):
-    """Add powerline noise to the input ecg.
-    """
-    def __init__(
-            self,
-            ecg_frequency=500.,
-            powerline_frequency=50.,
-            amplitude_limit=0.3, #mV
-            always_apply=False,
-            p=0.5
-        ):
-        """
-            :NOTE:
-                powerline frequency for Europe is 50 Hz, and 60 Hz is for USA or Asia
-
-                default value of amplitude_limit is taken from paper "IIR digital filter design for powerline
-                noise cancellation of ECG signal using arduino platform"
-
-            :args:
-                ecg_frequency (float): frequency of the input ecg
-                powerline_frequency (float): frequency of powerline
-                amplitude_limit (float): limit of noise amplitude
-        """
-        super(PowerlineNoise, self).__init__(always_apply, p)
-
-        self.ecg_frequency = M.prepare_non_negative_float(ecg_frequency, 'ecg_frequency')
-        self.powerline_frequency = M.prepare_non_negative_float(powerline_frequency, 'powerline_frequency')
-        self.amplitude_limit = M.prepare_non_negative_float(amplitude_limit, 'amplitude_limit')
-
-    def apply(self, ecg, amplitude, phase, **params):
-        return F.add_harmonic(ecg, self.ecg_frequency, amplitude, self.powerline_frequency, phase)
-
-    def get_params(self):
-        amplitude = np.random.random() * self.amplitude_limit
-        phase = np.random.random() * 2 * np.pi
-
-        return {'amplitude': amplitude, 'phase': phase}
-
-    def get_transform_init_args_names(self):
-        return ('ecg_frequency', 'powerline_frequency', 'amplitude_limit')

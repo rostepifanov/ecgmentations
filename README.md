@@ -66,6 +66,13 @@ The list of time axis transforms:
 - [RandomTimeCrop]()
 - [TimePadIfNeeded]()
 
+The list of pulse transforms:
+
+- [SinePulse]()
+- [SquarePulse]()
+- [PowerlineNoise]()
+- [RespirationNoise]()
+
 The list of other transforms:
 
 - [AmplitudeInvert]()
@@ -75,7 +82,7 @@ The list of other transforms:
 - [Blur]()
 - [GaussBlur]()
 - [AmplitudeScale]()
-- [PowerlineNoise]()
+
 
 ## Citing
 
