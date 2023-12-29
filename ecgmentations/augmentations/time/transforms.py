@@ -5,7 +5,7 @@ import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.time.functional as F
 
 from ecgmentations.augmentations.enum import PositionType
-from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
+from ecgmentations.core.transforms import DualTransform
 
 class TimeReverse(DualTransform):
     """Reverse the input ecg.
