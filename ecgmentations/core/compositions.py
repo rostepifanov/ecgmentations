@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 
 from ecgmentations.core.transforms import Transform
@@ -55,8 +56,8 @@ class Compose(object):
         return {'p': self.p}
 
 class Sequential(Compose):
-    """Compose transforms to apply sequentially."""
-
+    """Compose transforms to apply sequentially.
+    """
     def __init__(self, transforms, p=0.5):
         super().__init__(transforms, p)
 
@@ -68,9 +69,8 @@ class Sequential(Compose):
 
 class OneOf(Compose):
     """Select one of transforms to apply.
-    Transforms probabilities will be normalized to one 1, so in this case transforms probabilities works as weights.
+       Transforms probabilities will be normalized to one 1, so in this case transforms probabilities works as weights.
     """
-
     def __init__(self, transforms, p=0.5):
         super(OneOf, self).__init__(transforms, p)
 
