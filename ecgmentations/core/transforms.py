@@ -62,7 +62,7 @@ class Transform(object):
 
             you must specify targets in subclass
 
-            for example: ('egc', ) or ('egc', 'mask')
+            for example: ('ecg', ) or ('ecg', 'mask')
         """
         raise NotImplementedError
 

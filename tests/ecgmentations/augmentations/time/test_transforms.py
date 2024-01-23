@@ -35,3 +35,16 @@ def test_TimePadIfNeeded_CASE_left_padding():
 
     assert pytest.approx(tecg[:ecg.shape[0]]) == ecg
     assert pytest.approx(tecg[ecg.shape[0]:]) == 0.
+
+def test_TimeCutout_CASE_mask_fill_value():
+    ecg = np.random.uniform(size=(12, 5000)).T
+    mask = np.zeros((1, 5000)).T
+
+    mask_fill_value = 0
+
+    transform = E.TimeCutout(mask_fill_value=mask_fill_value, always_apply=True)
+    transformed = transform(ecg=ecg, mask=mask)
+
+    tecg, tmask = transformed['ecg'], transformed['mask']
+
+    assert pytest.approx(tmask[mask != tmask]) == mask_fill_value

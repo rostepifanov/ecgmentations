@@ -165,7 +165,7 @@ class TimeCutout(DualTransform):
         if self.mask_fill_value is None:
             return mask
         else:
-            return F.time_cutout(ecg, cutouts, self.mask_fill_value)
+            return F.time_cutout(mask, cutouts, self.mask_fill_value)
 
     @property
     def targets_as_params(self):
