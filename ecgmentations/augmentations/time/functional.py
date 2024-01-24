@@ -7,7 +7,7 @@ def time_reverse(ecg):
     return np.flip(ecg, axis=0)
 
 def time_shift(ecg, shift, border_mode, fill_value):
-    ecg = np.array(ecg)
+    ecg = np.copy(ecg)
     length = ecg.shape[0]
 
     pad_ = int(length*shift)
@@ -62,7 +62,7 @@ def time_wrap(ecg, cells, ncells):
     return necg
 
 def time_cutout(ecg, cutouts, fill_value):
-    ecg = np.array(ecg)
+    ecg = np.copy(ecg)
 
     for cutout_start, cutout_length in cutouts:
         ecg[cutout_start: cutout_start+cutout_length] = fill_value
