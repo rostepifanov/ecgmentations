@@ -1,7 +1,10 @@
 import cv2
 import numpy as np
+import scipy as sp
 
 from itertools import tee
+
+from ecgmentations.augmentations.enum import ReductionType
 
 def time_reverse(ecg):
     return np.flip(ecg, axis=0)
@@ -106,5 +109,26 @@ def pad(ecg, left_pad, rigth_pad, border_mode, fill_value):
         axis=0,
         arr=ecg
     )
+
+    return ecg
+
+def pooling(ecg, reduction, kernel_size, border_mode, fill_value):
+    if reduction == ReductionType.MIN:
+        filter = sp.ndimage.minimum_filter
+    elif reduction == ReductionType.MEAN:
+        filter = sp.ndimage.uniform_filter
+    elif reduction == ReductionType.MAX:
+        filter = sp.ndimage.maximum_filter
+    elif reduction == ReductionType.MEDIAN:
+        filter = sp.ndimage.median_filter
+    else:
+        raise ValueError('Get invalide reduction: {}'.format(reduction))
+
+    pad_width = kernel_size // 2
+
+    ecg = pad(ecg, pad_width, pad_width, border_mode, fill_value)
+    ecg = filter(ecg, size=kernel_size)
+
+    ecg = ecg[pad_width:-pad_width]
 
     return ecg

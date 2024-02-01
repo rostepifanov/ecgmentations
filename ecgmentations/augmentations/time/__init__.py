@@ -8,4 +8,6 @@ from ecgmentations.augmentations.time.transforms import (
     CenterTimeCrop,
     RandomTimeCrop,
     TimePadIfNeeded,
+    Pooling,
+    Blur,
 )

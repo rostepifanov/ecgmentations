@@ -3,6 +3,8 @@ import pytest
 import numpy as np
 import ecgmentations as E
 
+from ecgmentations.augmentations.enum import ReductionType
+
 def test_TimeCrop_CASE_left_crop():
     ecg = np.random.uniform(size=(12, 5000)).T
     mask = np.zeros((1, 5000)).T
@@ -48,3 +50,16 @@ def test_TimeCutout_CASE_mask_fill_value():
     tecg, tmask = transformed['ecg'], transformed['mask']
 
     assert pytest.approx(tmask[mask != tmask]) == mask_fill_value
+
+@pytest.mark.parametrize('reduction', list(map(lambda t: t.value, ReductionType)))
+def test_Pooling_CASE_reduction(reduction):
+    ecg = np.random.uniform(size=(12, 5000)).T
+    mask = np.zeros((1, 5000)).T
+
+    transform = E.Pooling(reduction, always_apply=True)
+    transformed = transform(ecg=ecg, mask=mask)
+
+    tecg, tmask = transformed['ecg'], transformed['mask']
+
+    assert tecg.shape == ecg.shape
+    assert pytest.approx(tecg) != ecg

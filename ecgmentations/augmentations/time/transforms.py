@@ -4,8 +4,8 @@ import numpy as np
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.time.functional as F
 
-from ecgmentations.augmentations.enum import PositionType
-from ecgmentations.core.transforms import DualTransform
+from ecgmentations.augmentations.enum import PositionType, ReductionType
+from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
 
 class TimeReverse(DualTransform):
     """Reverse the input ecg.
@@ -262,7 +262,7 @@ class RandomTimeCrop(TimeCrop):
         return ('length', )
 
 class TimePadIfNeeded(DualTransform):
-    """Pad lenght of the ecg to the minimal value.
+    """Pad lenght of the ecg to the minimal length.
     """
     def __init__(
             self,
@@ -323,3 +323,56 @@ class TimePadIfNeeded(DualTransform):
 
     def get_transform_init_args_names(self):
         return ('min_length', 'position', 'border_mode', 'fill_value', 'fill_mask_value')
+
+class Pooling(EcgOnlyTransform):
+    """Reduce resolution of time axis of the input ecg
+    """
+    def __init__(
+            self,
+            reduction=ReductionType.MEAN,
+            kernel_size_range=(3, 5),
+            always_apply=False,
+            p=0.5
+        ):
+        """
+            :args:
+                reduction (ReductionType, str): reduction type (MIN, MEAN, MAX)
+                kernel_size_range ((int, int)): range for select kernel size of blur filter
+        """
+        super(Pooling, self).__init__(always_apply, p)
+
+        self.reduction = ReductionType(reduction)
+
+        self.kernel_size_range = M.prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
+
+        self.min_kernel_size = kernel_size_range[0]
+        self.max_kernel_size = kernel_size_range[1]
+
+        if self.min_kernel_size % 2 == 0 or self.max_kernel_size % 2 == 0:
+            raise ValueError('Invalid range borders. Must be odd, but got: {}.'.format(kernel_size_range))
+
+    def apply(self, ecg, kernel_size, **params):
+        return F.pooling(ecg, self.reduction, kernel_size, cv2.BORDER_CONSTANT, 0)
+
+    def get_params(self):
+        kernel_size = 2 * np.random.randint(self.min_kernel_size // 2, self.max_kernel_size // 2 + 1) + 1
+
+        return {'kernel_size': kernel_size}
+
+    def get_transform_init_args_names(self):
+        return ('reduction', 'kernel_size_range')
+
+class Blur(Pooling):
+    """Blur the input ecg.
+    """
+    def __init__(
+            self,
+            kernel_size_range=(3, 5),
+            always_apply=False,
+            p=0.5
+        ):
+        """
+            :args:
+                kernel_size_range ((int, int)): range for select kernel size of blur filter
+        """
+        super(Blur, self).__init__(ReductionType.MEAN, kernel_size_range, always_apply, p)

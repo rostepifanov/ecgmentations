@@ -6,7 +6,6 @@ from ecgmentations.augmentations.transforms import (
     ChannelShuffle,
     ChannelDropout,
     GaussNoise,
-    Blur,
     GaussBlur,
     AmplitudeScale,
 )
