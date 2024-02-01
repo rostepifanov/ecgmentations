@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 
 import ecgmentations.augmentations.time.functional as F
