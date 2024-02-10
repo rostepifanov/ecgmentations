@@ -16,18 +16,19 @@ def test_Sequential_CASE_create_AND_subtype_error():
         transform = E.Sequential([
             E.TimeReverse(always_apply=True),
             object()
-        ])
+        ], always_apply=True)
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_no_transfroms():
     ecg = np.ones((12, 5000))
 
-    transform = E.Sequential([], p=1.0)
+    transform = E.Sequential([
+    ], always_apply=True)
 
-    output = transform(ecg=ecg)['ecg']
-    expected = ecg
+    transformed = transform(ecg=ecg)
+    tecg = transformed['ecg']
 
-    assert pytest.approx(output) == expected
+    assert pytest.approx(tecg) == ecg
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_one_flip():
@@ -35,11 +36,12 @@ def test_Sequential_CASE_call_AND_one_flip():
 
     transform = E.Sequential([
         E.TimeReverse(always_apply=True)
-    ], p=1.0)
+    ], always_apply=True)
 
-    output = transform(ecg=ecg)['ecg']
+    transformed = transform(ecg=ecg)
+    tecg = transformed['ecg']
 
-    assert pytest.approx(output) != ecg
+    assert pytest.approx(tecg) != ecg
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_double_flip():
@@ -48,23 +50,24 @@ def test_Sequential_CASE_call_AND_double_flip():
     transform = E.Sequential([
         E.TimeReverse(always_apply=True),
         E.TimeReverse(always_apply=True)
-    ], p=1.0)
+    ], always_apply=True)
 
-    output = transform(ecg=ecg)['ecg']
-    expected = ecg
+    transformed = transform(ecg=ecg)
+    tecg = transformed['ecg']
 
-    assert pytest.approx(output) == expected
+    assert pytest.approx(tecg) == ecg
 
 @pytest.mark.core
 def test_OneOf_CASE_call_AND_no_transfroms():
     ecg = np.ones((12, 5000))
 
-    transform = E.OneOf([])
+    transform = E.OneOf([
+    ], always_apply=True)
 
-    output = transform(ecg=ecg)['ecg']
-    expected = ecg
+    transformed = transform(ecg=ecg)
+    tecg = transformed['ecg']
 
-    assert pytest.approx(output) == expected
+    assert pytest.approx(tecg) == ecg
 
 @pytest.mark.core
 def test_OneOf_CASE_call_AND_check_application():
@@ -75,10 +78,10 @@ def test_OneOf_CASE_call_AND_check_application():
         E.OneOf([
             E.TimeReverse(),
             E.TimeReverse()
-        ], p=1.0)
-    ], p=1.0)
+        ], always_apply=True)
+    ], always_apply=True)
 
-    output = transform(ecg=ecg)['ecg']
-    expected = ecg
+    transformed = transform(ecg=ecg)
+    tecg = transformed['ecg']
 
-    assert pytest.approx(output) == expected
+    assert pytest.approx(tecg) == ecg
