@@ -1,14 +1,21 @@
 import cv2
 import numpy as np
 
-from ecgmentations.core.utils import format_args, get_shortest_class_fullname
+from ecgmentations.core.application import Apply
+from ecgmentations.core.utils import format_args
 
-class Transform(object):
-    def __init__(self, always_apply=False, p=0.5):
-        self.p = p
-        self.always_apply = always_apply
+class Transform(Apply):
+    """Root class for single augmentations
+    """
+    def __call__(self, *args, force_apply=False, **data):
+        """
+            :args:
+                force_apply (bool): the flag of force application
+                data (dict): the data to make a transformation
 
-    def __call__(self, *args, force_apply = False, **data):
+            :return:
+                dict of transformed data
+        """
         if args:
             raise KeyError('You have to pass data to augmentations as named arguments, for example: aug(ecg=ecg)')
 
@@ -47,7 +54,11 @@ class Transform(object):
     def __repr__(self):
         state = self.get_base_init_args()
         state.update(self.get_transform_init_args())
-        return '{name}({args})'.format(name=self.__class__.__name__, args=format_args(state))
+
+        name = self.__class__.__name__
+        args=format_args(state)
+
+        return '{}({})'.format(name, args)
 
     def _get_target_function(self, name):
         target_function = self.targets.get(name, lambda x, **p: x)
@@ -58,11 +69,11 @@ class Transform(object):
 
     @property
     def targets(self):
-        """ NOTE
+        """
+            :NOTE:
+                you must specify targets in subclass
 
-            you must specify targets in subclass
-
-            for example: ('ecg', ) or ('ecg', 'mask')
+                for example: ('ecg', ) or ('ecg', 'mask')
         """
         raise NotImplementedError
 
@@ -72,28 +83,21 @@ class Transform(object):
 
     def get_params_dependent_on_targets(self, params):
         raise NotImplementedError(
-            'Method get_params_dependent_on_targets is not implemented in class {name}'.format(name=self.__class__.__name__)
+            'Method get_params_dependent_on_targets is not implemented in class {}'.format(self.__class__.__name__)
         )
-
-    @classmethod
-    def get_class_fullname(cls):
-        return get_shortest_class_fullname(cls)
 
     def get_transform_init_args_names(self):
         raise NotImplementedError(
-            'Class {name} is not serializable because the `get_transform_init_args_names` method is not '
-            'implemented'.format(name=self.get_class_fullname())
+            'Class {} is not serializable because the `get_transform_init_args_names` method is not '
+            'implemented'.format(self.get_class_fullname())
         )
-
-    def get_base_init_args(self):
-        return {'always_apply': self.always_apply, 'p': self.p}
 
     def get_transform_init_args(self):
         return {k: getattr(self, k) for k in self.get_transform_init_args_names()}
 
 class EcgOnlyTransform(Transform):
-    """Transform applied to ecg only."""
-
+    """Transform applied to ecg only
+    """
     def apply(self, ecg, **params):
         raise NotImplementedError
 
@@ -102,8 +106,8 @@ class EcgOnlyTransform(Transform):
         return { 'ecg': self.apply }
 
 class DualTransform(Transform):
-    """Transform for segmentation task."""
-
+    """Transform for segmentation task
+    """
     @property
     def targets(self):
         return {
@@ -115,8 +119,8 @@ class DualTransform(Transform):
         return self.apply(mask, **{k: cv2.INTER_NEAREST if k == 'interpolation' else v for k, v in params.items()})
 
 class Identity(DualTransform):
-    """Identity transform"""
-
+    """Identity transform
+    """
     def apply(self, ecg, **params):
         return ecg
 
