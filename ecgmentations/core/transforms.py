@@ -27,7 +27,7 @@ class Transform(Apply):
         if args:
             raise KeyError('You have to pass data to augmentations as named arguments, for example: aug(ecg=ecg)')
 
-        if force_apply or self.always_apply or (np.random.random() < self.p):
+        if self.whether_apply(force_apply):
             params = self.get_params()
 
             if self.targets_as_params:

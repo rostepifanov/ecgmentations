@@ -1,3 +1,5 @@
+import numpy as np
+
 from ecgmentations.core.utils import get_shortest_class_fullname
 
 class Apply(object):
@@ -14,6 +16,12 @@ class Apply(object):
         """
         self.always_apply = always_apply
         self.p = p
+
+    def whether_apply(self, force_apply):
+        return force_apply or self.always_apply or (np.random.random() < self.p)
+
+    def __call__(self, *args, force_apply=False, **data):
+        raise NotImplementedError
 
     @classmethod
     def get_class_fullname(cls):

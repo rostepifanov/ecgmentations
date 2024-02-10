@@ -7,7 +7,7 @@ class Compose(Apply):
     def __init__(self, transforms, always_apply, p):
         """
             :args:
-                transforms (list of Apply): operations for composition
+                transforms (list of Apply): list of operations to compose
                 always_apply (bool): the flag of force application
                 p (float): the probability of application
         """
@@ -28,9 +28,6 @@ class Compose(Apply):
 
     def __len__(self):
         return len(self.transforms)
-
-    def __call__(self, *args, force_apply=False, **data):
-        raise NotImplementedError
 
     def __getitem__(self, idx):
         return self.transforms[idx]
@@ -67,14 +64,14 @@ class Sequential(Compose):
     def __init__(self, transforms, always_apply=False, p=1.0):
         """
             :args:
-                transforms (list of Apply): operations for composition
+                transforms (list of Apply): list of operations to apply sequentially
                 always_apply (bool): the flag of force application
                 p (float): the probability of application
         """
         super(Sequential, self).__init__(transforms, always_apply, p)
 
     def __call__(self, *args, force_apply=False, **data):
-        if force_apply or self.always_apply or (np.random.random() < self.p):
+        if self.whether_apply(force_apply):
             for transform in self.transforms:
                 data = transform(**data)
 
@@ -89,7 +86,7 @@ class OneOf(Compose):
                 transform probabilities will be normalized to one 1, so in this case transforms probabilities works as weights.
 
             :args:
-                transforms (list of Apply): operations for composition
+                transforms (list of Apply): list of operations to select one to apply
                 always_apply (bool): the flag of force application
                 p (float): the probability of application
         """
@@ -101,7 +98,7 @@ class OneOf(Compose):
         self.transforms_ps = [t / s for t in transforms_ps]
 
     def __call__(self, *args, force_apply = False, **data):
-        if self.transforms_ps and (force_apply or self.always_apply or (np.random.random() < self.p)):
+        if self.transforms_ps and self.whether_apply(force_apply):
             transform = np.random.choice(self.transforms, p=self.transforms_ps)
             data = transform(force_apply=True, **data)
 
