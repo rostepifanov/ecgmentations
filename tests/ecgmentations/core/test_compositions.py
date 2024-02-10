@@ -4,17 +4,25 @@ import numpy as np
 import ecgmentations as E
 
 @pytest.mark.core
-def test_Sequential_CASE_create_AND_warning():
-    with pytest.warns(UserWarning, match='transforms is single transform, but a sequence is expected! Transform will be wrapped into list.'):
+def test_Sequential_CASE_create_AND_list_error():
+    with pytest.raises(RuntimeError, match=r'transforms is type of <.+> that is not list'):
         transform = E.Sequential(
             E.TimeReverse(always_apply=True)
         )
 
 @pytest.mark.core
+def test_Sequential_CASE_create_AND_subtype_error():
+    with pytest.raises(RuntimeError, match=r'object at \d+ position is not subtype of Apply'):
+        transform = E.Sequential([
+            E.TimeReverse(always_apply=True),
+            object()
+        ])
+
+@pytest.mark.core
 def test_Sequential_CASE_call_AND_no_transfroms():
     ecg = np.ones((12, 5000))
 
-    transform = E.Sequential([])
+    transform = E.Sequential([], p=1.0)
 
     output = transform(ecg=ecg)['ecg']
     expected = ecg
@@ -27,7 +35,7 @@ def test_Sequential_CASE_call_AND_one_flip():
 
     transform = E.Sequential([
         E.TimeReverse(always_apply=True)
-    ])
+    ], p=1.0)
 
     output = transform(ecg=ecg)['ecg']
 
@@ -40,7 +48,7 @@ def test_Sequential_CASE_call_AND_double_flip():
     transform = E.Sequential([
         E.TimeReverse(always_apply=True),
         E.TimeReverse(always_apply=True)
-    ])
+    ], p=1.0)
 
     output = transform(ecg=ecg)['ecg']
     expected = ecg
@@ -52,6 +60,23 @@ def test_OneOf_CASE_call_AND_no_transfroms():
     ecg = np.ones((12, 5000))
 
     transform = E.OneOf([])
+
+    output = transform(ecg=ecg)['ecg']
+    expected = ecg
+
+    assert pytest.approx(output) == expected
+
+@pytest.mark.core
+def test_OneOf_CASE_call_AND_check_application():
+    ecg = np.ones((12, 5000))
+
+    transform = E.Sequential([
+        E.TimeReverse(always_apply=True),
+        E.OneOf([
+            E.TimeReverse(),
+            E.TimeReverse()
+        ], p=1.0)
+    ], p=1.0)
 
     output = transform(ecg=ecg)['ecg']
     expected = ecg

@@ -7,6 +7,14 @@ from ecgmentations.core.utils import format_args
 class Transform(Apply):
     """Root class for single augmentations
     """
+    def __init__(self, always_apply=False, p=0.5):
+        """
+            :args:
+                always_apply (bool): the flag of force application
+                p (float): the probability of application
+        """
+        super(Transform, self).__init__(always_apply, p)
+
     def __call__(self, *args, force_apply=False, **data):
         """
             :args:

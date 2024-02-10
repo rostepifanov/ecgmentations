@@ -3,7 +3,10 @@ from ecgmentations.core.utils import get_shortest_class_fullname
 class Apply(object):
     """Root class for single and compound augmentations
     """
-    def __init__(self, always_apply=False, p=0.5):
+
+    REPR_INDENT_STEP=2
+
+    def __init__(self, always_apply, p):
         """
             :args:
                 always_apply (bool): the flag of force application

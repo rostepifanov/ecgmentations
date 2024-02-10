@@ -1,26 +1,35 @@
-import warnings
 import numpy as np
 
-from ecgmentations.core.transforms import Transform
+from ecgmentations.core.application import Apply
 from ecgmentations.core.utils import format_args, get_shortest_class_fullname
 
-REPR_INDENT_STEP = 2
+class Compose(Apply):
+    def __init__(self, transforms, always_apply, p):
+        """
+            :args:
+                transforms (list of Apply): operations for composition
+                always_apply (bool): the flag of force application
+                p (float): the probability of application
+        """
+        super(Compose, self).__init__(always_apply, p)
 
-class Compose(object):
-    def __init__(self, transforms, p):
-        if isinstance(transforms, (Compose, Transform)):
-            warnings.warn(
-                'transforms is single transform, but a sequence is expected! Transform will be wrapped into list.'
+        if not isinstance(transforms, list):
+            raise RuntimeError(
+                'transforms is type of {} that is not list'.format(type(transforms))
             )
-            transforms = [transforms]
+        elif not all(isinstance(t, Apply) for t in transforms):
+            for idx, t in enumerate(transforms):
+                if not isinstance(t, Apply):
+                    raise RuntimeError(
+                        'object at {} position is not subtype of Apply'.format(idx)
+                    )
 
         self.transforms = transforms
-        self.p = p
 
     def __len__(self):
         return len(self.transforms)
 
-    def __call__(self, *args, force_apply = False, **data):
+    def __call__(self, *args, force_apply=False, **data):
         raise NotImplementedError
 
     def __getitem__(self, idx):
@@ -29,7 +38,7 @@ class Compose(object):
     def __repr__(self):
         return self.repr()
 
-    def repr(self, indent=REPR_INDENT_STEP):
+    def repr(self, indent=Apply.REPR_INDENT_STEP):
         args = self.get_base_init_args()
 
         repr_string = self.__class__.__name__ + '(['
@@ -38,13 +47,13 @@ class Compose(object):
             repr_string += '\n'
 
             if hasattr(t, 'repr'):
-                t_repr = t.repr(indent + REPR_INDENT_STEP)
+                t_repr = t.repr(indent + self.REPR_INDENT_STEP)
             else:
                 t_repr = repr(t)
 
             repr_string += ' ' * indent + t_repr + ','
 
-        repr_string += '\n' + ' ' * (indent - REPR_INDENT_STEP) + '], {args})'.format(args=format_args(args))
+        repr_string += '\n' + ' ' * (indent - self.REPR_INDENT_STEP) + '], {args})'.format(args=format_args(args))
 
         return repr_string
 
@@ -52,27 +61,39 @@ class Compose(object):
     def get_class_fullname(cls):
         return get_shortest_class_fullname(cls)
 
-    def get_base_init_args(self):
-        return {'p': self.p}
-
 class Sequential(Compose):
     """Compose transforms to apply sequentially.
     """
-    def __init__(self, transforms, p=0.5):
-        super().__init__(transforms, p)
+    def __init__(self, transforms, always_apply=False, p=1.0):
+        """
+            :args:
+                transforms (list of Apply): operations for composition
+                always_apply (bool): the flag of force application
+                p (float): the probability of application
+        """
+        super(Sequential, self).__init__(transforms, always_apply, p)
 
-    def __call__(self, *args, force_apply = False, **data):
-        for transform in self.transforms:
-            data = transform(force_apply=force_apply, **data)
+    def __call__(self, *args, force_apply=False, **data):
+        if force_apply or self.always_apply or (np.random.random() < self.p):
+            for transform in self.transforms:
+                data = transform(**data)
 
         return data
 
 class OneOf(Compose):
     """Select one of transforms to apply.
-       Transforms probabilities will be normalized to one 1, so in this case transforms probabilities works as weights.
     """
-    def __init__(self, transforms, p=0.5):
-        super(OneOf, self).__init__(transforms, p)
+    def __init__(self, transforms, always_apply=False, p=0.5):
+        """
+            :NOTE:
+                transform probabilities will be normalized to one 1, so in this case transforms probabilities works as weights.
+
+            :args:
+                transforms (list of Apply): operations for composition
+                always_apply (bool): the flag of force application
+                p (float): the probability of application
+        """
+        super(OneOf, self).__init__(transforms, always_apply, p)
 
         transforms_ps = [t.p for t in self.transforms]
         s = sum(transforms_ps)
@@ -80,7 +101,7 @@ class OneOf(Compose):
         self.transforms_ps = [t / s for t in transforms_ps]
 
     def __call__(self, *args, force_apply = False, **data):
-        if (force_apply or (np.random.random() < self.p)) and self.transforms_ps:
+        if self.transforms_ps and (force_apply or self.always_apply or (np.random.random() < self.p)):
             transform = np.random.choice(self.transforms, p=self.transforms_ps)
             data = transform(force_apply=True, **data)
 
