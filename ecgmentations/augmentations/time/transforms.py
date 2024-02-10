@@ -46,8 +46,8 @@ class TimeShift(DualTransform):
     def apply(self, ecg, shift, **params):
         return F.time_shift(ecg, shift, self.border_mode, self.fill_value)
 
-    def apply_mask(self, mask, shift, **params):
-        return F.time_shift(ecg, shift, self.border_mode, self.fill_mask_value)
+    def apply_to_mask(self, mask, shift, **params):
+        return F.time_shift(mask, shift, self.border_mode, self.fill_mask_value)
 
     def get_params(self):
         shift = np.random.random() * self.shift_limit
@@ -294,8 +294,8 @@ class TimePadIfNeeded(DualTransform):
     def apply(self, ecg, left_pad, rigth_pad, **params):
         return F.pad(ecg, left_pad, rigth_pad, self.border_mode, self.fill_value)
 
-    def apply_mask(self, mask, left_pad, rigth_pad, **params):
-        return F.pad(ecg, left_pad, rigth_pad, self.border_mode, self.fill_mask_value)
+    def apply_to_mask(self, mask, left_pad, rigth_pad, **params):
+        return F.pad(mask, left_pad, rigth_pad, self.border_mode, self.fill_mask_value)
 
     @property
     def targets_as_params(self):
