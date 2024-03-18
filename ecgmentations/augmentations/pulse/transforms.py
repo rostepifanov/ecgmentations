@@ -25,9 +25,12 @@ class SinePulse(EcgOnlyTransform):
                     0 - 1 Hz (default) "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
-                ecg_frequency (float): frequency of the input ecg
-                pulse_frequency_range ((float, float)): range of pulse frequency
-                amplitude_limit (float): limit of pulse amplitude
+                ecg_frequency: float
+                    frequency of the input ecg
+                pulse_frequency_range: (float, float)
+                    range of pulse frequency
+                amplitude_limit: float
+                    limit of pulse amplitude
         """
         super(SinePulse, self).__init__(always_apply, p)
 
@@ -75,9 +78,12 @@ class PowerlineNoise(SinePulse):
                     0.333 mV "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
 
             :args:
-                ecg_frequency (float): frequency of the input ecg
-                powerline_frequency (float): frequency of powerline
-                amplitude_limit (float): limit of noise amplitude
+                ecg_frequency: float
+                    frequency of the input ecg
+                powerline_frequency: float
+                    frequency of powerline
+                amplitude_limit: float
+                    limit of noise amplitude
         """
         self.powerline_frequency = M.prepare_non_negative_float(powerline_frequency, 'powerline_frequency')
         powerline_frequency_range = (self.powerline_frequency, self.powerline_frequency)
@@ -108,9 +114,12 @@ class RespirationNoise(SinePulse):
                     1 mV (default) "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
 
             :args:
-                ecg_frequency (float): frequency of the input ecg
-                breathing_rate_range ((int, int)): breathing rate range in bpm
-                amplitude_limit (float): limit of noise amplitude
+                ecg_frequency: float
+                    frequency of the input ecg
+                breathing_rate_range: (int, int)
+                    breathing rate range in bpm
+                amplitude_limit: float
+                    limit of noise amplitude
         """
         self.breathing_rate_range = M.prepare_int_asymrange(breathing_rate_range, 'breathing_rate_range', 0)
         breathing_frequency_range = (breathing_rate_range[0] / 60, breathing_rate_range[1] / 60)
@@ -140,9 +149,12 @@ class SquarePulse(EcgOnlyTransform):
                     0 - 5 Hz (default) "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
-                ecg_frequency (float): frequency of the input ecg
-                pulse_frequency_range (float): range of pulse frequency
-                amplitude_limit (float): limit of pulse amplitude
+                ecg_frequency: float
+                    frequency of the input ecg
+                pulse_frequency_range: float
+                    range of pulse frequency
+                amplitude_limit: float
+                    limit of pulse amplitude
         """
         super(SquarePulse, self).__init__(always_apply, p)
 

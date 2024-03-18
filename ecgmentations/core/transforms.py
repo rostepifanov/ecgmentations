@@ -10,16 +10,20 @@ class Transform(Apply):
     def __init__(self, always_apply=False, p=0.5):
         """
             :args:
-                always_apply (bool): the flag of force application
-                p (float): the probability of application
+                always_apply: bool
+                    the flag of force application
+                p: float
+                    the probability of application
         """
         super(Transform, self).__init__(always_apply, p)
 
     def __call__(self, *args, force_apply=False, **data):
         """
             :args:
-                force_apply (bool): the flag of force application
-                data (dict): the data to make a transformation
+                force_apply: bool
+                    the flag of force application
+                data: dict
+                    the data to make a transformation
 
             :return:
                 dict of transformed data

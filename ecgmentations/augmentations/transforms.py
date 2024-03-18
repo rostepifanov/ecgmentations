@@ -47,8 +47,10 @@ class ChannelDropout(EcgOnlyTransform):
         ):
         """
             :args:
-                channel_drop_range ((int, int)): range for select the number of dropping channels
-                fill_value (int) : fill value for dropped channels
+                channel_drop_range: (int, int)
+                    range for select the number of dropping channels
+                fill_value: int
+                    fill value for dropped channels
         """
         super(ChannelDropout, self).__init__(always_apply, p)
 
@@ -101,9 +103,12 @@ class GaussNoise(EcgOnlyTransform):
                     0.02 mV "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
-                mean (float): mean of gaussian noise
-                variance (float): variance of gaussian noise
-                per_channel (bool) : if set to True, noise will be sampled for each channel independently
+                mean: float
+                    mean of gaussian noise
+                variance: float
+                    variance of gaussian noise
+                per_channel: bool
+                    if set to True, noise will be sampled for each channel independently
         """
         super(GaussNoise, self).__init__(always_apply, p)
 
@@ -141,7 +146,8 @@ class Blur(EcgOnlyTransform):
         ):
         """
             :args:
-                kernel_size_range ((int, int)): range for select kernel size of blur filter
+                kernel_size_range: (int, int)
+                    range for select kernel size of blur filter
         """
         super(Blur, self).__init__(always_apply, p)
 
@@ -184,8 +190,10 @@ class GaussBlur(EcgOnlyTransform):
                 paper kernel is (0.10, 0.20, 0.40, 0.20, 0.10)
 
             :args:
-                variance (float): variance of gaussian kernel
-                kernel_size_range ((int, int)): range for select kernel size of blur filter
+                variance: float
+                    variance of gaussian kernel
+                kernel_size_range: (int, int)
+                    range for select kernel size of blur filter
         """
         super(GaussBlur, self).__init__(always_apply, p)
 
@@ -223,7 +231,8 @@ class AmplitudeScale(EcgOnlyTransform):
         ):
         """
             :args:
-                scaling_range ((float, float)): range for selecting scaling factor
+                scaling_range: (float, float)
+                    range for selecting scaling factor
         """
         super(AmplitudeScale, self).__init__(always_apply, p)
 

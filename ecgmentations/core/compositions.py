@@ -7,9 +7,12 @@ class Compose(Apply):
     def __init__(self, transforms, always_apply, p):
         """
             :args:
-                transforms (list of Apply): list of operations to compose
-                always_apply (bool): the flag of force application
-                p (float): the probability of application
+                transforms: list of Apply
+                    list of operations to compose
+                always_apply: bool
+                    the flag of force application
+                p: float
+                    the probability of application
         """
         super(Compose, self).__init__(always_apply, p)
 
@@ -64,9 +67,12 @@ class Sequential(Compose):
     def __init__(self, transforms, always_apply=False, p=1.0):
         """
             :args:
-                transforms (list of Apply): list of operations to apply sequentially
-                always_apply (bool): the flag of force application
-                p (float): the probability of application
+                transforms: list of Apply
+                    list of operations to apply sequentially
+                always_apply: bool
+                    the flag of force application
+                p: float
+                    the probability of application
         """
         super(Sequential, self).__init__(transforms, always_apply, p)
 
@@ -86,9 +92,12 @@ class OneOf(Compose):
                 transform probabilities will be normalized to one 1, so in this case transforms probabilities works as weights.
 
             :args:
-                transforms (list of Apply): list of operations to select one to apply
-                always_apply (bool): the flag of force application
-                p (float): the probability of application
+                transforms: list of Apply
+                    list of operations to select one to apply
+                always_apply: bool
+                    the flag of force application
+                p: float
+                    the probability of application
         """
         super(OneOf, self).__init__(transforms, always_apply, p)
 

@@ -7,9 +7,12 @@ class Modify(Apply):
     def __init__(self, transform, always_apply, p):
         """
             :args:
-                transforms (list of Apply): list of operations to apply with modification
-                always_apply (bool): the flag of force application
-                p (float): the probability of application
+                transforms: list of Apply
+                    list of operations to apply with modification
+                always_apply: bool
+                    the flag of force application
+                p: float
+                    the probability of application
         """
         super(Modify, self).__init__(always_apply, p)
 

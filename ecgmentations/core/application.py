@@ -11,8 +11,10 @@ class Apply(object):
     def __init__(self, always_apply, p):
         """
             :args:
-                always_apply (bool): the flag of force application
-                p (float): the probability of application
+                always_apply: bool
+                    the flag of force application
+                p: float
+                    the probability of application
         """
         self.always_apply = always_apply
         self.p = p
@@ -27,13 +29,15 @@ class Apply(object):
     def get_class_fullname(cls):
         """
             :return:
-                the name of class as str
+                output: str
+                    the name of class
         """
         return get_shortest_class_fullname(cls)
 
     def get_base_init_args(self):
         """
             :return:
-                initialization parameters
+                output: dict
+                    initialization parameters
         """
         return {'always_apply': self.always_apply, 'p': self.p}

@@ -30,10 +30,14 @@ class TimeShift(DualTransform):
         ):
         """
             :args:
-                shift_limit (float): limit of shifting
-                border_mode (OpenCV flag): OpenCV border mode
-                fill_value (int, float, None): padding value if border_mode is cv2.BORDER_CONSTANT
-                fill_mask_value (int, None): padding value for mask if border_mode is cv2.BORDER_CONSTANT
+                shift_limit: float
+                    limit of shifting
+                border_mode: OpenCV flag
+                    OpenCV border mode
+                fill_value: int or float or None
+                    padding value if border_mode is cv2.BORDER_CONSTANT
+                fill_mask_value: int or None
+                    padding value for mask if border_mode is cv2.BORDER_CONSTANT
         """
         super(TimeShift, self).__init__(always_apply, p)
 
@@ -68,7 +72,8 @@ class TimeSegmentShuffle(DualTransform):
         ):
         """
             :args:
-                num_segments (int): count of grid cells on the ecg
+                num_segments: int
+                    count of grid cells on the ecg
         """
         super(TimeSegmentShuffle, self).__init__(always_apply, p)
 
@@ -98,8 +103,10 @@ class RandomTimeWrap(DualTransform):
         ):
         """
             :args:
-                num_steps (int): count of grid cells on the ecg
-                wrap_limit (float): limit of stretching or squeezing
+                num_steps: int
+                    count of grid cells on the ecg
+                wrap_limit: float
+                    limit of stretching or squeezing
         """
         super(RandomTimeWrap, self).__init__(always_apply, p)
 
@@ -138,10 +145,14 @@ class TimeCutout(DualTransform):
         ):
         """
             :args:
-                num_ranges ((int, int)): number of cutout ranges
-                length_range ((int, int)): range for selecting cutout length
-                fill_value (float): value to fill cutouted ranges in the input ecg
-                mask_fill_value (int, None): value to fill cutouted ranges in the mask. if value is None, mask is not affected
+                num_ranges: (int, int)
+                    number of cutout ranges
+                length_range: (int, int)
+                    range for selecting cutout length
+                fill_value: float
+                    value to fill cutouted ranges in the input ecg
+                mask_fill_value: int or None
+                    value to fill cutouted ranges in the mask. if value is None, mask is not affected
         """
         super(TimeCutout, self).__init__(always_apply, p)
 
@@ -199,8 +210,10 @@ class TimeCrop(DualTransform):
         ):
         """
             :args:
-                length (int): the length of cropped time segment
-                position (PositionType, str): position of cropped time segment
+                lengthЭ: int
+                    the length of cropped time segment
+                position: PositionType or str
+                    position of cropped time segment
         """
         super(TimeCrop, self).__init__(always_apply, p)
 
@@ -236,7 +249,8 @@ class CenterTimeCrop(TimeCrop):
         ):
         """
             :args:
-                length (int): the length of cropped region
+                length: int
+                    the length of cropped region
         """
         super(CenterTimeCrop, self).__init__(length, PositionType.CENTER, always_apply, p)
 
@@ -254,7 +268,8 @@ class RandomTimeCrop(TimeCrop):
         ):
         """
             :args:
-                length (int): the length of cropped region
+                length: int
+                    the length of cropped region
         """
         super(RandomTimeCrop, self).__init__(length, PositionType.RANDOM, always_apply, p)
 
@@ -276,11 +291,16 @@ class TimePadIfNeeded(DualTransform):
         ):
         """
             :args:
-                min_length (int): minimal length to fill with padding
-                position (PositionType, str): position of ecg
-                border_mode (OpenCV flag): OpenCV border mode
-                fill_value (int, float, None): padding value if border_mode is cv2.BORDER_CONSTANT
-                fill_mask_value (int, None): padding value for mask if border_mode is cv2.BORDER_CONSTANT
+                min_length: int
+                    minimal length to fill with padding
+                position: PositionType or str
+                    position of ecg
+                border_mode: OpenCV flag
+                    OpenCV border mode
+                fill_value: int or float or None
+                    padding value if border_mode is cv2.BORDER_CONSTANT
+                fill_mask_value: int or None
+                    padding value for mask if border_mode is cv2.BORDER_CONSTANT
         """
         super(TimePadIfNeeded, self).__init__(always_apply, p)
 
@@ -336,8 +356,10 @@ class Pooling(EcgOnlyTransform):
         ):
         """
             :args:
-                reduction (ReductionType, str): reduction type (MIN, MEAN, MAX)
-                kernel_size_range ((int, int)): range for select kernel size of blur filter
+                reduction: ReductionType or str
+                    reduction type (MIN, MEAN, MAX)
+                kernel_size_range: (int, int)
+                    range for select kernel size of blur filter
         """
         super(Pooling, self).__init__(always_apply, p)
 
@@ -373,6 +395,7 @@ class Blur(Pooling):
         ):
         """
             :args:
-                kernel_size_range ((int, int)): range for select kernel size of blur filter
+                kernel_size_range: (int, int)
+                    range for select kernel size of blur filter
         """
         super(Blur, self).__init__(ReductionType.MEAN, kernel_size_range, always_apply, p)
