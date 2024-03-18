@@ -25,12 +25,20 @@ class Apply(object):
     def __call__(self, *args, force_apply=False, **data):
         raise NotImplementedError
 
+    def get_class_name(self):
+        """
+            :return:
+                output: str
+                    the name of class
+        """
+        return self.__class__.__name__
+
     @classmethod
     def get_class_fullname(cls):
         """
             :return:
                 output: str
-                    the name of class
+                    the full name of class
         """
         return get_shortest_class_fullname(cls)
 

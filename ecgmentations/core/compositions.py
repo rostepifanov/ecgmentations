@@ -41,7 +41,7 @@ class Compose(Apply):
     def repr(self, indent=Apply.REPR_INDENT_STEP):
         args = self.get_base_init_args()
 
-        repr_string = self.__class__.__name__ + '(['
+        repr_string = self.get_class_name() + '(['
 
         for t in self.transforms:
             repr_string += '\n'
