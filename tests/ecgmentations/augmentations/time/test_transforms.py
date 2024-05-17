@@ -19,7 +19,7 @@ def test_TimeCrop_CASE_left_crop():
     assert tecg.shape == (expected_length, *ecg.shape[1:])
     assert tmask.shape == (expected_length, *mask.shape[1:])
 
-    assert pytest.approx(tecg) == ecg[-expected_length:]
+    assert pytest.approx(tecg) == ecg[:expected_length]
 
 def test_TimePadIfNeeded_CASE_left_padding():
     ecg = np.random.uniform(size=(12, 4000)).T

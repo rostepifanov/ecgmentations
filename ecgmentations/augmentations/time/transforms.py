@@ -225,11 +225,11 @@ class TimeCrop(DualTransform):
 
     def get_params(self):
         if self.position == PositionType.LEFT:
-            left_bound = 1.0
+            left_bound = 0.0
         elif self.position == PositionType.CENTER:
             left_bound = 0.5
         elif self.position == PositionType.RIGHT:
-            left_bound = 0.0
+            left_bound = 1.0
         else:
             left_bound = np.random.random()
 

@@ -36,7 +36,7 @@ class Transform(Apply):
 
             if self.targets_as_params:
                 assert all(name in data for name in self.targets_as_params), '{} requires {}'.format(
-                    self.__class__.__name__, self.targets_as_params
+                    self.get_class_name(), self.targets_as_params
                 )
 
                 targets_as_params = {name: data[name] for name in self.targets_as_params}
@@ -67,7 +67,7 @@ class Transform(Apply):
         state = self.get_base_init_args()
         state.update(self.get_transform_init_args())
 
-        name = self.__class__.__name__
+        name = self.get_class_name()
         args=format_args(state)
 
         return '{}({})'.format(name, args)
@@ -95,13 +95,13 @@ class Transform(Apply):
 
     def get_params_dependent_on_targets(self, params):
         raise NotImplementedError(
-            'Method get_params_dependent_on_targets is not implemented in class {}'.format(self.__class__.__name__)
+            'Method get_params_dependent_on_targets is not implemented in class {}'.format(self.get_class_name())
         )
 
     def get_transform_init_args_names(self):
         raise NotImplementedError(
             'Class {} is not serializable because the `get_transform_init_args_names` method is not '
-            'implemented'.format(self.get_class_fullname())
+            'implemented'.format(self.get_class_name())
         )
 
     def get_transform_init_args(self):
