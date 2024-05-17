@@ -47,8 +47,10 @@ class ChannelDropout(EcgOnlyTransform):
         ):
         """
             :args:
-                channel_drop_range ((int, int)): range for select the number of dropping channels
-                fill_value (int) : fill value for dropped channels
+                channel_drop_range: (int, int)
+                    range for select the number of dropping channels
+                fill_value: int
+                    fill value for dropped channels
         """
         super(ChannelDropout, self).__init__(always_apply, p)
 
@@ -101,9 +103,12 @@ class GaussNoise(EcgOnlyTransform):
                     0.02 mV "RandECG: Data Augmentation for Deep Neural Network Based ECG Classification"
 
             :args:
-                mean (float): mean of gaussian noise
-                variance (float): variance of gaussian noise
-                per_channel (bool) : if set to True, noise will be sampled for each channel independently
+                mean: float
+                    mean of gaussian noise
+                variance: float
+                    variance of gaussian noise
+                per_channel: bool
+                    if set to True, noise will be sampled for each channel independently
         """
         super(GaussNoise, self).__init__(always_apply, p)
 
@@ -130,41 +135,6 @@ class GaussNoise(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('mean', 'variance', 'per_channel')
 
-class Blur(EcgOnlyTransform):
-    """Blur the input ecg.
-    """
-    def __init__(
-            self,
-            kernel_size_range=(3, 5),
-            always_apply=False,
-            p=0.5
-        ):
-        """
-            :args:
-                kernel_size_range ((int, int)): range for select kernel size of blur filter
-        """
-        super(Blur, self).__init__(always_apply, p)
-
-        self.kernel_size_range = M.prepare_int_asymrange(kernel_size_range, 'kernel_size_range', 0)
-
-        self.min_kernel_size = kernel_size_range[0]
-        self.max_kernel_size = kernel_size_range[1]
-
-        if self.min_kernel_size % 2 == 0 or self.max_kernel_size % 2 == 0:
-            raise ValueError('Invalid range borders. Must be odd, but got: {}.'.format(kernel_size_range))
-
-    def apply(self, ecg, kernel, **params):
-        return F.conv(ecg, kernel, cv2.BORDER_CONSTANT, 0)
-
-    def get_params(self):
-        kernel_size = 2 * np.random.randint(self.min_kernel_size // 2, self.max_kernel_size // 2 + 1) + 1
-        kernel = np.ones(kernel_size) / kernel_size
-
-        return {'kernel': kernel}
-
-    def get_transform_init_args_names(self):
-        return ('kernel_size_range', )
-
 class GaussBlur(EcgOnlyTransform):
     """Blur by gaussian the input ecg.
     """
@@ -184,8 +154,10 @@ class GaussBlur(EcgOnlyTransform):
                 paper kernel is (0.10, 0.20, 0.40, 0.20, 0.10)
 
             :args:
-                variance (float): variance of gaussian kernel
-                kernel_size_range ((int, int)): range for select kernel size of blur filter
+                variance: float
+                    variance of gaussian kernel
+                kernel_size_range: (int, int)
+                    range for select kernel size of blur filter
         """
         super(GaussBlur, self).__init__(always_apply, p)
 
@@ -223,7 +195,8 @@ class AmplitudeScale(EcgOnlyTransform):
         ):
         """
             :args:
-                scaling_range ((float, float)): range for selecting scaling factor
+                scaling_range: (float, float)
+                    range for selecting scaling factor
         """
         super(AmplitudeScale, self).__init__(always_apply, p)
 

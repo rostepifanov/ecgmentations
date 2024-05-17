@@ -61,6 +61,8 @@ The list of time axis transforms:
 - [TimeSegmentShuffle]()
 - [RandomTimeWrap]()
 - [TimeCutout]()
+- [Blur]()
+- [Pooling]()
 - [TimeCrop]()
 - [CenterTimeCrop]()
 - [RandomTimeCrop]()
@@ -79,7 +81,6 @@ The list of other transforms:
 - [ChannelShuffle]()
 - [ChannelDropout]()
 - [GaussNoise]()
-- [Blur]()
 - [GaussBlur]()
 - [AmplitudeScale]()
 

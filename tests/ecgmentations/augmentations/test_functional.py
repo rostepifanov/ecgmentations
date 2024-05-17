@@ -1,6 +1,5 @@
 import pytest
 
-import cv2
 import numpy as np
 import ecgmentations.augmentations.functional as F
 

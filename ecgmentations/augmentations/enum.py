@@ -5,3 +5,9 @@ class PositionType(enum.Enum):
     LEFT = 'left'
     RIGHT = 'right'
     RANDOM = 'random'
+
+class ReductionType(enum.Enum):
+    MIN = 'min'
+    MEAN = 'mean'
+    MAX = 'max'
+    MEDIAN  = 'median'
