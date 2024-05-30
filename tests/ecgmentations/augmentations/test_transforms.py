@@ -21,6 +21,8 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.SinePulse,
     E.SquarePulse,
     E.RespirationNoise,
+    E.LowPassFilter,
+    E.HighPassFilter,
 ]
 
 SHAPE_UNPRESERVED_TRANSFORMS = [
