@@ -75,6 +75,13 @@ The list of pulse transforms:
 - [PowerlineNoise]()
 - [RespirationNoise]()
 
+The list of filter transforms:
+
+- [LowPassFilter]()
+- [HighPassFilter]()
+- [BandPassFilter]()
+- [SigmoidCompression]()
+
 The list of other transforms:
 
 - [AmplitudeInvert]()

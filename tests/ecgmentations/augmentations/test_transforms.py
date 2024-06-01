@@ -23,6 +23,8 @@ SHAPE_PRESERVED_TRANSFORMS = [
     E.RespirationNoise,
     E.LowPassFilter,
     E.HighPassFilter,
+    E.BandPassFilter,
+    E.SigmoidCompression,
 ]
 
 SHAPE_UNPRESERVED_TRANSFORMS = [

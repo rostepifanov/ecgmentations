@@ -11,31 +11,31 @@ class LowPassFilter(EcgOnlyTransform):
     def __init__(
             self,
             ecg_frequency=500.,
-            frequency_cutoff=47.,
+            cutoff_frequency=47.,
             always_apply=False,
             p=1.0,
         ):
         """
             :NOTE:
-                frequency_cutoff:
-                    47 Hz (default) "Effective Data Augmentation, Filters, and Automation Techniques for Automatic 12-Lead ECG Classification Using Deep Residual "
+                cutoff_frequency:
+                    47 Hz (default) "Effective Data Augmentation, Filters, and Automation Techniques for Automatic 12-Lead ECG Classification Using Deep Residual"
 
             :args:
                 ecg_frequency: float
                     frequency of the input ecg
-                frequency_cutoff: float
+                cutoff_frequency: float
                     cutoff frequency for filter
         """
         super(LowPassFilter, self).__init__(always_apply, p)
 
         self.ecg_frequency = M.prepare_non_negative_float(ecg_frequency, 'ecg_frequency')
-        self.frequency_cutoff = M.prepare_non_negative_float(frequency_cutoff, 'ecg_frequency')
+        self.cutoff_frequency = M.prepare_non_negative_float(cutoff_frequency, 'cutoff_frequency')
 
     def apply(self, ecg, **params):
-        return F.lowpass_filter(ecg, self.ecg_frequency, self.frequency_cutoff)
+        return F.lowpass_filter(ecg, self.ecg_frequency, self.cutoff_frequency)
 
     def get_transform_init_args_names(self):
-        return ('ecg_frequency', 'frequency_cutoff')
+        return ('ecg_frequency', 'cutoff_frequency')
 
 class HighPassFilter(EcgOnlyTransform):
     """Apply high-pass filter to the input ecg.
@@ -43,28 +43,76 @@ class HighPassFilter(EcgOnlyTransform):
     def __init__(
             self,
             ecg_frequency=500.,
-            frequency_cutoff=0.5,
+            cutoff_frequency=0.5,
             always_apply=False,
             p=1.0,
         ):
         """
             :NOTE:
-                frequency_cutoff:
-                    0.5 Hz (default) "Effective Data Augmentation, Filters, and Automation Techniques for Automatic 12-Lead ECG Classification Using Deep Residual "
+                cutoff_frequency:
+                    0.5 Hz (default) "Effective Data Augmentation, Filters, and Automation Techniques for Automatic 12-Lead ECG Classification Using Deep Residual"
 
             :args:
                 ecg_frequency: float
                     frequency of the input ecg
-                frequency_cutoff: float
+                cutoff_frequency: float
                     cutoff frequency for filter
         """
         super(HighPassFilter, self).__init__(always_apply, p)
 
         self.ecg_frequency = M.prepare_non_negative_float(ecg_frequency, 'ecg_frequency')
-        self.frequency_cutoff = M.prepare_non_negative_float(frequency_cutoff, 'ecg_frequency')
+        self.cutoff_frequency = M.prepare_non_negative_float(cutoff_frequency, 'cutoff_frequency')
 
     def apply(self, ecg, **params):
-        return F.highpass_filter(ecg, self.ecg_frequency, self.frequency_cutoff)
+        return F.highpass_filter(ecg, self.ecg_frequency, self.cutoff_frequency)
 
     def get_transform_init_args_names(self):
-        return ('ecg_frequency', 'frequency_cutoff')
+        return ('ecg_frequency', 'cutoff_frequency')
+
+class BandPassFilter(EcgOnlyTransform):
+    """Apply band-pass filter to the input ecg.
+    """
+    def __init__(
+            self,
+            ecg_frequency=500.,
+            cutoff_frequencies=(0.5, 47.),
+            always_apply=False,
+            p=1.0,
+        ):
+        """
+            :NOTE:
+                cutoff_frequencies:
+                    see params of LowPassFilter and HighPassFilter
+
+            :args:
+                ecg_frequency: float
+                    frequency of the input ecg
+                cutoff_frequencies: tuple of float
+                    cutoff frequencies for filter
+        """
+        super(BandPassFilter, self).__init__(always_apply, p)
+
+        self.ecg_frequency = M.prepare_non_negative_float(ecg_frequency, 'ecg_frequency')
+        self.cutoff_frequencies = M.prepare_float_asymrange(cutoff_frequencies, 'cutoff_frequencies', low=0.)
+
+    def apply(self, ecg, **params):
+        return F.bandpass_filter(ecg, self.ecg_frequency, self.cutoff_frequencies)
+
+    def get_transform_init_args_names(self):
+        return ('ecg_frequency', 'cutoff_frequencies')
+
+class SigmoidCompression(EcgOnlyTransform):
+    """Apply sigmoid compression to the input ecg.
+    """
+    def __init__(
+            self,
+            always_apply=False,
+            p=1.0,
+        ):
+        super(SigmoidCompression, self).__init__(always_apply, p)
+
+    def apply(self, ecg, **params):
+        return F.sigmoid_compression(ecg)
+
+    def get_transform_init_args_names(self):
+        return tuple()
