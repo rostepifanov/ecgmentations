@@ -19,7 +19,7 @@ def test_TimeCrop_CASE_left_crop():
     assert tecg.shape == (expected_length, *ecg.shape[1:])
     assert tmask.shape == (expected_length, *mask.shape[1:])
 
-    assert pytest.approx(tecg) == ecg[:expected_length]
+    assert np.allclose(tecg, ecg[:expected_length])
 
 def test_TimePadIfNeeded_CASE_left_padding():
     ecg = np.random.uniform(size=(12, 4000)).T
@@ -35,8 +35,8 @@ def test_TimePadIfNeeded_CASE_left_padding():
     assert tecg.shape == (expected_length, *ecg.shape[1:])
     assert tmask.shape == (expected_length, *mask.shape[1:])
 
-    assert pytest.approx(tecg[:ecg.shape[0]]) == ecg
-    assert pytest.approx(tecg[ecg.shape[0]:]) == 0.
+    assert np.allclose(tecg[:ecg.shape[0]], ecg)
+    assert np.allclose(tecg[ecg.shape[0]:], 0.)
 
 def test_TimeCutout_CASE_mask_fill_value():
     ecg = np.random.uniform(size=(12, 5000)).T
@@ -49,7 +49,7 @@ def test_TimeCutout_CASE_mask_fill_value():
 
     tecg, tmask = transformed['ecg'], transformed['mask']
 
-    assert pytest.approx(tmask[mask != tmask]) == mask_fill_value
+    assert np.all(tmask[mask != tmask], mask_fill_value)
 
 @pytest.mark.parametrize('reduction', list(map(lambda t: t.value, ReductionType)))
 def test_Pooling_CASE_reduction(reduction):
@@ -62,4 +62,4 @@ def test_Pooling_CASE_reduction(reduction):
     tecg, tmask = transformed['ecg'], transformed['mask']
 
     assert tecg.shape == ecg.shape
-    assert pytest.approx(tecg) != ecg
+    assert not np.allclose(tecg, ecg)

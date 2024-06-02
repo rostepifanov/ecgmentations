@@ -53,7 +53,7 @@ def test_Transform_CASE_call(transform):
     tecg, tmask = transformed['ecg'], transformed['mask']
 
     assert tecg.shape == ecg.shape
-    assert pytest.approx(tecg) != ecg
+    assert not np.allclose(tecg, ecg)
 
     assert tmask.shape == mask.shape
 

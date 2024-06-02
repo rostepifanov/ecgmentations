@@ -33,8 +33,8 @@ def test_ToChannels_CASE_call_AND_zero_channel():
     tecg, tmask = transformed['ecg'], transformed['mask']
 
     assert tecg.shape == ecg.shape
-    assert pytest.approx(tecg[:, channels]) != ecg[:, channels]
-    assert pytest.approx(tecg[:, exchannels]) == ecg[:, exchannels]
+    assert not np.allclose(tecg[:, channels], ecg[:, channels])
+    assert np.allclose(tecg[:, exchannels], ecg[:, exchannels])
 
     assert tmask.shape == mask.shape
-    assert pytest.approx(tmask) != mask
+    assert not np.array_equal(tmask, mask)

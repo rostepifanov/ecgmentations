@@ -22,4 +22,4 @@ def test_Identity_CASE_call():
     output = transform(ecg=ecg)['ecg']
     expected = ecg
 
-    assert pytest.approx(output) == expected
+    assert np.allclose(output, expected)

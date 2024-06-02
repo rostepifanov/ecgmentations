@@ -28,7 +28,7 @@ def test_Sequential_CASE_call_AND_no_transfroms():
     transformed = transform(ecg=ecg)
     tecg = transformed['ecg']
 
-    assert pytest.approx(tecg) == ecg
+    assert np.allclose(tecg, ecg)
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_one_flip():
@@ -41,7 +41,7 @@ def test_Sequential_CASE_call_AND_one_flip():
     transformed = transform(ecg=ecg)
     tecg = transformed['ecg']
 
-    assert pytest.approx(tecg) != ecg
+    assert not np.allclose(tecg, ecg)
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_double_flip():
@@ -55,7 +55,7 @@ def test_Sequential_CASE_call_AND_double_flip():
     transformed = transform(ecg=ecg)
     tecg = transformed['ecg']
 
-    assert pytest.approx(tecg) == ecg
+    assert np.allclose(tecg, ecg)
 
 @pytest.mark.core
 def test_OneOf_CASE_call_AND_no_transfroms():
@@ -67,7 +67,7 @@ def test_OneOf_CASE_call_AND_no_transfroms():
     transformed = transform(ecg=ecg)
     tecg = transformed['ecg']
 
-    assert pytest.approx(tecg) == ecg
+    assert np.allclose(tecg, ecg)
 
 @pytest.mark.core
 def test_OneOf_CASE_call_AND_check_application():
@@ -84,4 +84,4 @@ def test_OneOf_CASE_call_AND_check_application():
     transformed = transform(ecg=ecg)
     tecg = transformed['ecg']
 
-    assert pytest.approx(tecg) == ecg
+    assert np.allclose(tecg, ecg)
