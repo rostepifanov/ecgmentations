@@ -45,7 +45,7 @@ transform = E.Sequential([
 ])
 
 # Create example ecg (length, nchannels)
-ecg = np.ones((12, 5000)).T
+ecg = np.ones((5000, 12))
 
 # Augment an ecg
 transformed = transform(ecg=ecg)

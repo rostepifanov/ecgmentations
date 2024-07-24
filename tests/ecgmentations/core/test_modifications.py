@@ -19,7 +19,7 @@ def test_ToChannels_CASE_create_AND_channels_error():
 
 @pytest.mark.core
 def test_ToChannels_CASE_call_AND_zero_channel():
-    ecg = np.random.random((12, 5000)).T
+    ecg = np.random.randn(5000, 12)
     mask = np.arange(1000)[: None]
 
     channels = [0, ]

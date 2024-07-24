@@ -44,8 +44,8 @@ def test_Transform_CASE_repr(transform):
 
 @pytest.mark.parametrize('transform', SHAPE_PRESERVED_TRANSFORMS)
 def test_Transform_CASE_call(transform):
-    ecg = np.random.uniform(size=(12, 5000)).T
-    mask = np.zeros((1, 5000)).T
+    ecg = np.random.randn(5000, 12)
+    mask = np.zeros((5000, 1))
 
     transform = transform(always_apply=True)
     transformed = transform(ecg=ecg, mask=mask)

@@ -15,11 +15,11 @@ def test_Identity_CASE_repr():
 
 @pytest.mark.core
 def test_Identity_CASE_call():
-    ecg = np.ones((12, 5000)).T
+    input = np.random.randn(5000, 12)
 
     transform = E.Identity(always_apply=True)
 
-    output = transform(ecg=ecg)['ecg']
-    expected = ecg
+    output = transform(ecg=input)['ecg']
+    expected = input
 
     assert np.allclose(output, expected)
