@@ -54,7 +54,7 @@ class TimeShift(DualTransform):
         return F.time_shift(mask, shift, self.border_mode, self.fill_mask_value)
 
     def get_params(self):
-        shift = np.random.random() * self.shift_limit
+        shift = (2 * np.random.random() - 1) * self.shift_limit
 
         return {'shift': shift}
 
