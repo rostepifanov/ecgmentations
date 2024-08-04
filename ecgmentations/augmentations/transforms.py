@@ -1,10 +1,11 @@
 import cv2
 import numpy as np
 
+import ecgmentations.core.enum as E
+import ecgmentations.core.constants as C
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.functional as F
 
-from ecgmentations.augmentations.enum import PositionType
 from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
 
 class AmplitudeInvert(EcgOnlyTransform):
@@ -27,7 +28,7 @@ class ChannelShuffle(EcgOnlyTransform):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
-        channel_order = np.arange(params['ecg'].shape[-1])
+        channel_order = np.arange(params['ecg'].shape[C.CHANNEL_DIM])
         np.random.shuffle(channel_order)
 
         return {'channel_order': channel_order}
@@ -69,7 +70,7 @@ class ChannelDropout(EcgOnlyTransform):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
-        num_channels = params['ecg'].shape[-1]
+        num_channels = params['ecg'].shape[C.CHANNEL_DIM]
 
         if num_channels == 1:
             raise NotImplementedError('Ecg has one channel. ChannelDropout is not defined.')
@@ -117,18 +118,19 @@ class GaussNoise(EcgOnlyTransform):
         self.per_channel = per_channel
 
     def apply(self, ecg, gauss, **params):
-        return F.gauss_noise(ecg, gauss)
+        return F.addition(ecg, gauss)
 
     @property
     def targets_as_params(self):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
-        if self.per_channel:
-            gauss = np.random.normal(self.mean, self.variance**0.5, params['ecg'].shape)
+        if self.per_channel and len(params['ecg'].shape) == C.NUM_MULTI_CHANNEL_DIMENSIONS:
+            shape = params['ecg'].shape
         else:
-            gauss = np.random.normal(self.mean, self.variance**0.5, params['ecg'].shape[:-1])
-            gauss = np.expand_dims(gauss, axis=-1)
+            shape = params['ecg'].shape[:C.NUM_SPATIAL_DIMENSIONS]
+
+        gauss = np.random.normal(self.mean, self.variance**0.5, shape)
 
         return {'gauss': gauss}
 
@@ -171,7 +173,7 @@ class GaussBlur(EcgOnlyTransform):
             raise ValueError('Invalid range borders. Must be odd, but got: {}.'.format(kernel_size_range))
 
     def apply(self, ecg, kernel, **params):
-        return F.conv(ecg, kernel, cv2.BORDER_CONSTANT, 0)
+        return F.conv(ecg, kernel, E.BorderType.CONSTANT, 0)
 
     def get_params(self):
         kernel_size = 2 * np.random.randint(self.min_kernel_size // 2, self.max_kernel_size // 2 + 1) + 1

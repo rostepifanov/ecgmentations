@@ -1,5 +1,3 @@
-import numpy as np
-
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.filter.functional as F
 

@@ -1,7 +1,7 @@
 import numpy as np
 
 from ecgmentations.core.application import Apply
-from ecgmentations.core.utils import format_args, get_shortest_class_fullname
+from ecgmentations.core.utils import format_args
 
 class Modify(Apply):
     def __init__(self, transform, always_apply, p):

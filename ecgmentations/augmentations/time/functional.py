@@ -4,14 +4,14 @@ import scipy as sp
 
 from itertools import tee
 
-from ecgmentations.augmentations.enum import ReductionType
+import ecgmentations.core.enum as E
+import ecgmentations.core.constants as C
 
 def time_reverse(ecg):
-    return np.flip(ecg, axis=0)
+    return np.flip(ecg, axis=C.SPATIAL_DIM)
 
 def time_shift(ecg, shift, border_mode, fill_value):
-    ecg = np.copy(ecg)
-    length = ecg.shape[0]
+    length = ecg.shape[C.SPATIAL_DIM]
 
     pad_ = int(length*shift)
 
@@ -25,7 +25,7 @@ def time_shift(ecg, shift, border_mode, fill_value):
     return ecg
 
 def time_segment_swap(ecg, segment_order):
-    length = ecg.shape[0]
+    length = ecg.shape[C.SPATIAL_DIM]
     time_point_order = np.arange(length)
 
     num_segments = len(segment_order)
@@ -44,7 +44,7 @@ def pairwise(iterable):
     yield from zip(first, second)
 
 def time_wrap(ecg, cells, ncells):
-    length = ecg.shape[0]
+    length = ecg.shape[C.SPATIAL_DIM]
 
     bounds = (length * cells).astype(np.int32)
     nbounds = (length * ncells).astype(np.int32)
@@ -58,7 +58,7 @@ def time_wrap(ecg, cells, ncells):
                 np.linspace(0, 1, rigth_bound - left_bound),
                 ecg
             ),
-            axis=0,
+            axis=C.SPATIAL_DIM,
             arr=ecg[left_bound: rigth_bound]
         )
 
@@ -73,7 +73,7 @@ def time_cutout(ecg, cutouts, fill_value):
     return ecg
 
 def time_crop(ecg, left_bound, crop_length):
-    length = ecg.shape[0]
+    length = ecg.shape[C.SPATIAL_DIM]
 
     if length < crop_length:
         raise ValueError(
@@ -89,37 +89,30 @@ def time_crop(ecg, left_bound, crop_length):
     return ecg[t1:t2]
 
 def pad(ecg, left_pad, rigth_pad, border_mode, fill_value):
-    if border_mode == cv2.BORDER_CONSTANT:
-        border_mode = 'constant'
-    elif border_mode == cv2.BORDER_REPLICATE:
-        border_mode = 'edge'
-    else:
-        raise ValueError('Get invalide border_mode: {}'.format(border_mode))
+    kwargs = dict()
 
-    if border_mode == 'constant':
-        kwargs = { 'constant_values': fill_value }
-    else:
-        kwargs = dict()
+    if border_mode == E.BorderType.CONSTANT:
+        kwargs['constant_values'] = fill_value
 
     ecg = np.apply_along_axis(
         lambda ecg: np.pad( ecg,
                             pad_width=(left_pad, rigth_pad),
-                            mode=border_mode,
+                            mode=C.MAP_BORDER_TYPE_TO_NUMPY[border_mode],
                             **kwargs ),
-        axis=0,
+        axis=C.SPATIAL_DIM,
         arr=ecg
     )
 
     return ecg
 
 def pooling(ecg, reduction, kernel_size, border_mode, fill_value):
-    if reduction == ReductionType.MIN:
+    if reduction == E.ReductionType.MIN:
         filter = sp.ndimage.minimum_filter
-    elif reduction == ReductionType.MEAN:
+    elif reduction == E.ReductionType.MEAN:
         filter = sp.ndimage.uniform_filter
-    elif reduction == ReductionType.MAX:
+    elif reduction == E.ReductionType.MAX:
         filter = sp.ndimage.maximum_filter
-    elif reduction == ReductionType.MEDIAN:
+    elif reduction == E.ReductionType.MEDIAN:
         filter = sp.ndimage.median_filter
     else:
         raise ValueError('Get invalide reduction: {}'.format(reduction))

@@ -1,5 +1,6 @@
 import numpy as np
 
+import ecgmentations.core.constants as C
 import ecgmentations.augmentations.time.functional as F
 
 def amplitude_invert(ecg):
@@ -14,8 +15,11 @@ def channel_dropout(ecg, channels_to_drop, fill_value):
 
     return ecg
 
-def gauss_noise(ecg, gauss):
-    return ecg + gauss
+def addition(ecg, extra):
+    if len(ecg.shape) > len(extra.shape):
+        extra = np.expand_dims(extra, axis=C.CHANNEL_DIM)
+
+    return ecg + extra
 
 def conv(ecg, kernel, border_mode, fill_value):
     pad_width = kernel.size // 2

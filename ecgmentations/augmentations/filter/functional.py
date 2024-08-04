@@ -1,4 +1,3 @@
-import numpy as np
 import scipy as sp
 
 def lowpass_filter(ecg, ecg_frequency, cutoff_frequency):
