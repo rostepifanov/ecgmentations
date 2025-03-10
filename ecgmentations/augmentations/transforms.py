@@ -28,6 +28,9 @@ class ChannelShuffle(EcgOnlyTransform):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
+        if len(params['ecg'].shape) == C.NUM_MONO_CHANNEL_DIMENSIONS:
+            raise RuntimeError('Ecg has implicit channel. ChannelShuffle is not defined.')
+
         channel_order = np.arange(params['ecg'].shape[C.CHANNEL_DIM])
         np.random.shuffle(channel_order)
 
@@ -70,6 +73,9 @@ class ChannelDropout(EcgOnlyTransform):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
+        if len(params['ecg'].shape) == C.NUM_MONO_CHANNEL_DIMENSIONS:
+            raise RuntimeError('Ecg has implicit channel. ChannelDropout is not defined.')
+
         num_channels = params['ecg'].shape[C.CHANNEL_DIM]
 
         if num_channels == 1:
@@ -118,7 +124,7 @@ class GaussNoise(EcgOnlyTransform):
         self.per_channel = per_channel
 
     def apply(self, ecg, gauss, **params):
-        return F.addition(ecg, gauss)
+        return F.add(ecg, gauss)
 
     @property
     def targets_as_params(self):
@@ -208,7 +214,7 @@ class AmplitudeScale(EcgOnlyTransform):
         self.max_scaling_range = self.scaling_range[1]
 
     def apply(self, ecg, scaling_factor, **params):
-        return F.amplitude_scale(ecg, scaling_factor)
+        return F.multiply(ecg, scaling_factor)
 
     def get_params(self):
         scaling_factor = 1 + np.random.uniform(self.min_scaling_range, self.max_scaling_range)

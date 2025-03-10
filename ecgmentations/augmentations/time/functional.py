@@ -1,4 +1,3 @@
-import cv2
 import numpy as np
 import scipy as sp
 
@@ -6,9 +5,14 @@ from itertools import tee
 
 import ecgmentations.core.enum as E
 import ecgmentations.core.constants as C
+import ecgmentations.augmentations.functional as F
 
 def time_reverse(ecg):
-    return np.flip(ecg, axis=C.SPATIAL_DIM)
+    """Reverse spatial dim
+    """
+    ecg = np.flip(ecg, axis=C.SPATIAL_DIM)
+
+    return np.require(ecg, requirements=['C_CONTIGUOUS'])
 
 def time_shift(ecg, shift, border_mode, fill_value):
     length = ecg.shape[C.SPATIAL_DIM]
@@ -22,10 +26,12 @@ def time_shift(ecg, shift, border_mode, fill_value):
         ecg = pad(ecg, 0, -pad_, border_mode, fill_value)
         ecg = ecg[-pad_:]
 
-    return ecg
+    return np.require(ecg, requirements=['C_CONTIGUOUS'])
 
 def time_segment_swap(ecg, segment_order):
-    length = ecg.shape[C.SPATIAL_DIM]
+    shape = ecg.shape
+    length = shape[C.SPATIAL_DIM]
+
     time_point_order = np.arange(length)
 
     num_segments = len(segment_order)
@@ -34,7 +40,11 @@ def time_segment_swap(ecg, segment_order):
     )[segment_order]
 
     ecg = ecg[time_point_order]
-    ecg.shape = (length, -1)
+
+    if len(shape) == C.NUM_MULTI_CHANNEL_DIMENSIONS:
+        ecg.shape = (length, -1)
+    else:
+        ecg.shape = (length, )
 
     return ecg
 
@@ -94,14 +104,17 @@ def pad(ecg, left_pad, rigth_pad, border_mode, fill_value):
     if border_mode == E.BorderType.CONSTANT:
         kwargs['constant_values'] = fill_value
 
-    ecg = np.apply_along_axis(
-        lambda ecg: np.pad( ecg,
-                            pad_width=(left_pad, rigth_pad),
-                            mode=C.MAP_BORDER_TYPE_TO_NUMPY[border_mode],
-                            **kwargs ),
-        axis=C.SPATIAL_DIM,
-        arr=ecg
+    func = lambda arr: np.pad(
+        arr,
+        pad_width=(left_pad, rigth_pad),
+        mode=C.MAP_BORDER_TYPE_TO_NUMPY[border_mode],
+        **kwargs
     )
+
+    if len(ecg.shape) == C.NUM_MULTI_CHANNEL_DIMENSIONS:
+        ecg = F.apply_along_dim(ecg, func, C.CHANNEL_DIM)
+    else:
+        ecg = func(ecg)
 
     return ecg
 

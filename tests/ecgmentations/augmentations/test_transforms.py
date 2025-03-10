@@ -43,18 +43,55 @@ def test_Transform_CASE_repr(transform):
     assert 'p' in repr
 
 @pytest.mark.parametrize('transform', SHAPE_PRESERVED_TRANSFORMS)
-def test_Transform_CASE_call(transform):
-    ecg = np.random.uniform(size=(5000, 12))
-    mask = np.zeros((5000, 1))
+def test_Transform_CASE_call_AND_mono_channel(transform):
+    if transform == E.ChannelShuffle:
+        return
+    elif transform == E.ChannelDropout:
+        return
+
+    ecg = np.random.randn(5000).astype(np.float32)
+    mask = np.zeros((5000, ), dtype=np.uint8)
+
+    tecg = np.copy(ecg)
+    tmask = np.copy(mask)
 
     instance = transform(always_apply=True)
-    transformed = instance(ecg=ecg, mask=mask)
+    transformed = instance(ecg=tecg, mask=tmask)
 
     tecg, tmask = transformed['ecg'], transformed['mask']
 
+    assert tecg.flags['C_CONTIGUOUS'] == True
+    assert tecg.dtype == ecg.dtype
     assert tecg.shape == ecg.shape
     assert not np.allclose(tecg, ecg)
 
+    assert tmask.flags['C_CONTIGUOUS'] == True
+    assert tmask.dtype == mask.dtype
+    assert tmask.shape == mask.shape
+
+    if isinstance(transform, E.EcgOnlyTransform):
+        assert np.all(tmask == mask)
+
+@pytest.mark.parametrize('transform', SHAPE_PRESERVED_TRANSFORMS)
+def test_Transform_CASE_call_AND_multi_channel(transform):
+    ecg = np.random.randn(5000, 12).astype(np.float32)
+    mask = np.zeros((5000, 1), dtype=np.uint8)
+
+    tecg = np.copy(ecg)
+    tmask = np.copy(mask)
+
+    instance = transform(always_apply=True)
+    transformed = instance(ecg=tecg, mask=tmask)
+
+    tecg, tmask = transformed['ecg'], transformed['mask']
+
+    assert tecg.flags['C_CONTIGUOUS'] == True
+    assert tecg.dtype == ecg.dtype
+    assert tecg.shape == ecg.shape
+    assert not np.allclose(tecg, ecg)
+
+    assert tmask.flags['C_CONTIGUOUS'] == True
+    assert tmask.dtype == mask.dtype
     assert tmask.shape == mask.shape
 
     if isinstance(transform, E.EcgOnlyTransform):

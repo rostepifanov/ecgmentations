@@ -7,14 +7,20 @@ def add_sine_pulse(ecg, ecg_frequency, amplitude, frequency, phase):
     length = ecg.shape[C.SPATIAL_DIM]
 
     t = np.linspace(0, length / ecg_frequency, length)
-    ecg = ecg + amplitude * np.sin(2 * np.pi * frequency * t + phase)[:, None]
+    pulse = amplitude * np.sin(2 * np.pi * frequency * t + phase)
 
-    return ecg
+    if len(ecg.shape) == C.NUM_MULTI_CHANNEL_DIMENSIONS:
+        pulse = np.expand_dims(pulse, axis=C.CHANNEL_DIM)
+
+    return np.add(ecg, pulse, dtype=ecg.dtype)
 
 def add_square_pulse(ecg, ecg_frequency, amplitude, frequency, phase):
     length = ecg.shape[C.SPATIAL_DIM]
 
     t = np.linspace(0, length / ecg_frequency, length)
-    ecg = ecg + amplitude * sp.signal.square(2 * np.pi * frequency * t + phase)[:, None]
+    pulse = amplitude * sp.signal.square(2 * np.pi * frequency * t + phase)
 
-    return ecg
+    if len(ecg.shape) == C.NUM_MULTI_CHANNEL_DIMENSIONS:
+        pulse = np.expand_dims(pulse, axis=C.CHANNEL_DIM)
+
+    return np.add(ecg, pulse, dtype=ecg.dtype)

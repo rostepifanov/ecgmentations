@@ -8,7 +8,7 @@ def test_TimeCrop_CASE_left_crop():
     length = 5000
     expected_length = 4000
 
-    ecg = np.random.uniform(size=(12, length)).T
+    ecg = np.random.randn(12, length).T
     mask = np.zeros((1, length)).T
 
     instance = E.TimeCrop(length=expected_length, position=E.PositionType.LEFT, always_apply=True)
@@ -25,7 +25,7 @@ def test_TimePadIfNeeded_CASE_left_padding():
     length = 4000
     expected_length = 5000
 
-    ecg = np.random.uniform(size=(12, length)).T
+    ecg = np.random.randn(12, length).T
     mask = np.zeros((1, length)).T
 
     instance = E.TimePadIfNeeded(min_length=expected_length, position=E.PositionType.LEFT, always_apply=True)
@@ -40,7 +40,7 @@ def test_TimePadIfNeeded_CASE_left_padding():
     assert np.allclose(tecg[length:], 0.)
 
 def test_TimeCutout_CASE_mask_fill_value():
-    ecg = np.random.uniform(size=(12, 5000)).T
+    ecg = np.random.randn(12, 5000).T
     mask = np.zeros((1, 5000)).T
 
     mask_fill_value = 0
@@ -54,7 +54,7 @@ def test_TimeCutout_CASE_mask_fill_value():
 
 @pytest.mark.parametrize('reduction', list(map(lambda t: t.value, E.ReductionType)))
 def test_Pooling_CASE_reduction(reduction):
-    input = np.random.uniform(size=(12, 5000)).T
+    input = np.random.randn(12, 5000).T
 
     instance = E.Pooling(reduction, always_apply=True)
     output = instance(ecg=input)['ecg']
