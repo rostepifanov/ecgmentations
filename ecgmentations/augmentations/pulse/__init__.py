@@ -1,4 +1,4 @@
-from ecgmentations.augmentations.pulse.transforms import (
+from ecgmentations.augmentations.pulse.transformations import (
     SinePulse,
     PowerlineNoise,
     RespirationNoise,

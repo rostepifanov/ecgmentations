@@ -1,24 +1,24 @@
 import numpy as np
 
-from ecgmentations.core.application import Apply
-from ecgmentations.core.utils import format_args, get_shortest_class_fullname
+from ecgmentations.core.transformation import Transformation
+from ecgmentations.core.utils import format_args
 
-class Modify(Apply):
+class Modification(Transformation):
     def __init__(self, transform, always_apply, p):
         """
             :args:
-                transform: list of Apply
+                transform: list of Transformation
                     list of operations to apply with modification
                 always_apply: bool
                     the flag of force application
                 p: float
                     the probability of application
         """
-        super(Modify, self).__init__(always_apply, p)
+        super(Modification, self).__init__(always_apply, p)
 
-        if not isinstance(transform, Apply):
+        if not isinstance(transform, Transformation):
             raise RuntimeError(
-                'transform is type of {} that is not subtype of Apply'.format(type(transform))
+                'transform is type of {} that is not subtype of Transformation'.format(type(transform))
                 )
 
         self.transform = transform
@@ -26,7 +26,7 @@ class Modify(Apply):
     def __repr__(self):
         return self.repr()
 
-    def repr(self, indent=Apply.REPR_INDENT_STEP):
+    def repr(self, indent=Transformation.REPR_INDENT_STEP):
         args = self.get_base_init_args()
 
         repr_string = self.get_class_name() + '('
@@ -44,13 +44,13 @@ class Modify(Apply):
 
         return repr_string
 
-class ToChannels(Modify):
-    """Apply transforms to selected channels
+class ToChannels(Modification):
+    """Transformation transforms to selected channels
     """
     def __init__(self, transform, channels=[0, ], always_apply=False, p=0.5):
         """
             :args:
-                transform: list of Apply
+                transform: list of Transformation
                     list of operations to apply with modification
                 channels: list of int
                     selected channels to apply transform

@@ -1,13 +1,14 @@
 import cv2
 import numpy as np
 
+import ecgmentations.core.enum as E
+import ecgmentations.core.constants as C
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.functional as F
 
-from ecgmentations.augmentations.enum import PositionType
-from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
+from ecgmentations.core.augmentation import EcgOnlyAugmentation, DualAugmentation
 
-class AmplitudeInvert(EcgOnlyTransform):
+class AmplitudeInvert(EcgOnlyAugmentation):
     """Invert the input ecg.
     """
     def apply(self, ecg, **params):
@@ -16,7 +17,7 @@ class AmplitudeInvert(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return tuple()
 
-class ChannelShuffle(EcgOnlyTransform):
+class ChannelShuffle(EcgOnlyAugmentation):
     """Randomly rearrange channels of the input ecg.
     """
     def apply(self, ecg, channel_order, **params):
@@ -27,7 +28,10 @@ class ChannelShuffle(EcgOnlyTransform):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
-        channel_order = np.arange(params['ecg'].shape[-1])
+        if len(params['ecg'].shape) == C.NUM_MONO_CHANNEL_DIMENSIONS:
+            raise RuntimeError('Ecg has implicit channel. ChannelShuffle is not defined.')
+
+        channel_order = np.arange(params['ecg'].shape[C.CHANNEL_DIM])
         np.random.shuffle(channel_order)
 
         return {'channel_order': channel_order}
@@ -35,7 +39,7 @@ class ChannelShuffle(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ()
 
-class ChannelDropout(EcgOnlyTransform):
+class ChannelDropout(EcgOnlyAugmentation):
     """Randomly drop channels in the input ecg.
     """
     def __init__(
@@ -69,7 +73,10 @@ class ChannelDropout(EcgOnlyTransform):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
-        num_channels = params['ecg'].shape[-1]
+        if len(params['ecg'].shape) == C.NUM_MONO_CHANNEL_DIMENSIONS:
+            raise RuntimeError('Ecg has implicit channel. ChannelDropout is not defined.')
+
+        num_channels = params['ecg'].shape[C.CHANNEL_DIM]
 
         if num_channels == 1:
             raise NotImplementedError('Ecg has one channel. ChannelDropout is not defined.')
@@ -85,7 +92,7 @@ class ChannelDropout(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('channel_drop_range', 'fill_value')
 
-class GaussNoise(EcgOnlyTransform):
+class GaussNoise(EcgOnlyAugmentation):
     """Randomly add gaussian noise to the input ecg.
     """
     def __init__(
@@ -117,25 +124,26 @@ class GaussNoise(EcgOnlyTransform):
         self.per_channel = per_channel
 
     def apply(self, ecg, gauss, **params):
-        return F.gauss_noise(ecg, gauss)
+        return F.add(ecg, gauss)
 
     @property
     def targets_as_params(self):
         return ['ecg']
 
     def get_params_dependent_on_targets(self, params):
-        if self.per_channel:
-            gauss = np.random.normal(self.mean, self.variance**0.5, params['ecg'].shape)
+        if self.per_channel and len(params['ecg'].shape) == C.NUM_MULTI_CHANNEL_DIMENSIONS:
+            shape = params['ecg'].shape
         else:
-            gauss = np.random.normal(self.mean, self.variance**0.5, params['ecg'].shape[:-1])
-            gauss = np.expand_dims(gauss, axis=-1)
+            shape = params['ecg'].shape[:C.NUM_SPATIAL_DIMENSIONS]
+
+        gauss = np.random.normal(self.mean, self.variance**0.5, shape)
 
         return {'gauss': gauss}
 
     def get_transform_init_args_names(self):
         return ('mean', 'variance', 'per_channel')
 
-class GaussBlur(EcgOnlyTransform):
+class GaussBlur(EcgOnlyAugmentation):
     """Blur by gaussian the input ecg.
     """
     def __init__(
@@ -171,7 +179,7 @@ class GaussBlur(EcgOnlyTransform):
             raise ValueError('Invalid range borders. Must be odd, but got: {}.'.format(kernel_size_range))
 
     def apply(self, ecg, kernel, **params):
-        return F.conv(ecg, kernel, cv2.BORDER_CONSTANT, 0)
+        return F.conv(ecg, kernel, E.BorderType.CONSTANT, 0)
 
     def get_params(self):
         kernel_size = 2 * np.random.randint(self.min_kernel_size // 2, self.max_kernel_size // 2 + 1) + 1
@@ -184,7 +192,7 @@ class GaussBlur(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('variance', 'kernel_size_range')
 
-class AmplitudeScale(EcgOnlyTransform):
+class AmplitudeScale(EcgOnlyAugmentation):
     """Scale amplitude of the input ecg.
     """
     def __init__(
@@ -206,7 +214,7 @@ class AmplitudeScale(EcgOnlyTransform):
         self.max_scaling_range = self.scaling_range[1]
 
     def apply(self, ecg, scaling_factor, **params):
-        return F.amplitude_scale(ecg, scaling_factor)
+        return F.multiply(ecg, scaling_factor)
 
     def get_params(self):
         scaling_factor = 1 + np.random.uniform(self.min_scaling_range, self.max_scaling_range)

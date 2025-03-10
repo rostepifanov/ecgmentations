@@ -1,4 +1,4 @@
-from ecgmentations.augmentations.time.transforms import (
+from ecgmentations.augmentations.time.transformations import (
     TimeReverse,
     TimeShift,
     TimeSegmentShuffle,

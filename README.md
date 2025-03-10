@@ -45,7 +45,7 @@ transform = E.Sequential([
 ])
 
 # Create example ecg (length, nchannels)
-ecg = np.ones((12, 5000)).T
+ecg = np.ones((5000, 12))
 
 # Augment an ecg
 transformed = transform(ecg=ecg)
@@ -61,19 +61,26 @@ The list of time axis transforms:
 - [TimeSegmentShuffle]()
 - [RandomTimeWrap]()
 - [TimeCutout]()
-- [Blur]()
-- [Pooling]()
 - [TimeCrop]()
 - [CenterTimeCrop]()
 - [RandomTimeCrop]()
 - [TimePadIfNeeded]()
+- [Pooling]()
+- [Blur]()
 
 The list of pulse transforms:
 
 - [SinePulse]()
-- [SquarePulse]()
 - [PowerlineNoise]()
 - [RespirationNoise]()
+- [SquarePulse]()
+
+The list of filter transforms:
+
+- [LowPassFilter]()
+- [HighPassFilter]()
+- [BandPassFilter]()
+- [SigmoidCompression]()
 
 The list of other transforms:
 

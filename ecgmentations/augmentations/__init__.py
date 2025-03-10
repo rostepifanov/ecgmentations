@@ -1,7 +1,7 @@
-from ecgmentations.augmentations.enum import PositionType
-from ecgmentations.augmentations.time.transforms import *
-from ecgmentations.augmentations.pulse.transforms import *
-from ecgmentations.augmentations.transforms import (
+from ecgmentations.augmentations.time.transformations import *
+from ecgmentations.augmentations.pulse.transformations import *
+from ecgmentations.augmentations.filter.transformations import *
+from ecgmentations.augmentations.transformations import (
     AmplitudeInvert,
     ChannelShuffle,
     ChannelDropout,

@@ -3,9 +3,9 @@ import numpy as np
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.pulse.functional as F
 
-from ecgmentations.core.transforms import EcgOnlyTransform
+from ecgmentations.core.augmentation import EcgOnlyAugmentation
 
-class SinePulse(EcgOnlyTransform):
+class SinePulse(EcgOnlyAugmentation):
     """Add sine pulse to the input ecg.
     """
     def __init__(
@@ -76,6 +76,8 @@ class PowerlineNoise(SinePulse):
                 amplitude_limit:
                     0.3 mV (default) "IIR digital filter design for powerline noise cancellation of ECG signal using arduino platform"
                     0.333 mV "A Comparison of the Noise Sensitivity of Nine QRS Detection Algorithms"
+                    0.25 mV (low noise) "Self-supervised representation learning from 12-lead ECG data"
+                    2. mV (high noise) "Self-supervised representation learning from 12-lead ECG data"
 
             :args:
                 ecg_frequency: float
@@ -129,7 +131,48 @@ class RespirationNoise(SinePulse):
     def get_transform_init_args_names(self):
         return ('ecg_frequency', 'breathing_rate_range', 'amplitude_limit')
 
-class SquarePulse(EcgOnlyTransform):
+# class BaselineWander(EcgOnlyAugmentation):
+#     """Add baseline wander to the input ecg.
+#     """
+#     def __init__(
+#             self,
+#             ecg_frequency=500.,
+#             amplitude_limit=0.05,
+#             always_apply=False,
+#             p=0.5
+#         ):
+#         """
+#             :NOTE:
+#                 amplitude_limit:
+#                     0.05 mV (default, low noise) "Self-supervised representation learning from 12-lead ECG data"
+#                     0.3 mV - (high noise) "Self-supervised representation learning from 12-lead ECG data"
+
+#             :args:
+#                 ecg_frequency: float
+#                     frequency of the input ecg
+#                 amplitude_limit: float
+#                     limit of pulse amplitude
+#         """
+#         super(BaselineWander, self).__init__(always_apply, p)
+
+#         self.ecg_frequency = M.prepare_non_negative_float(ecg_frequency, 'ecg_frequency')
+#         self.amplitude_limit = M.prepare_non_negative_float(amplitude_limit, 'amplitude_limit')
+#         self.frequencies = (0.01, 0.02, 0.03, 0.04, 0.05)
+
+# #     def apply(self, ecg, amplitude, frequency, phase, **params):
+# #         return F.add_sine_pulse(ecg, self.ecg_frequency, amplitude, frequency, phase)
+
+#     def get_params(self):
+#         params = [ for _ in self.frequencies ]
+# #         amplitude = np.random.random() * self.amplitude_limit
+# #         phase = np.random.random() * 2 * np.pi
+
+# #         return {'amplitude': amplitude, 'frequency': frequency, 'phase': phase}
+
+#     def get_transform_init_args_names(self):
+#         return ('ecg_frequency', 'amplitude_limit')
+
+class SquarePulse(EcgOnlyAugmentation):
     """Add square pulse to the input ecg.
     """
     def __init__(

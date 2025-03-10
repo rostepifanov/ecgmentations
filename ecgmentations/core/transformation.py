@@ -2,7 +2,7 @@ import numpy as np
 
 from ecgmentations.core.utils import get_shortest_class_fullname
 
-class Apply(object):
+class Transformation(object):
     """Root class for single and compound augmentations
     """
 
@@ -18,6 +18,14 @@ class Apply(object):
         """
         self.always_apply = always_apply
         self.p = p
+
+    def get_base_init_args(self):
+        """
+            :return:
+                output: dict
+                    initialization parameters
+        """
+        return {'always_apply': self.always_apply, 'p': self.p}
 
     def whether_apply(self, force_apply):
         return force_apply or self.always_apply or (np.random.random() < self.p)
@@ -41,11 +49,3 @@ class Apply(object):
                     the full name of class
         """
         return get_shortest_class_fullname(cls)
-
-    def get_base_init_args(self):
-        """
-            :return:
-                output: dict
-                    initialization parameters
-        """
-        return {'always_apply': self.always_apply, 'p': self.p}
