@@ -12,7 +12,7 @@ def test_Sequential_CASE_create_AND_list_error():
 
 @pytest.mark.core
 def test_Sequential_CASE_create_AND_subtype_error():
-    with pytest.raises(RuntimeError, match=r'object at \d+ position is not subtype of Apply'):
+    with pytest.raises(RuntimeError, match=r'object at \d+ position is not subtype of Transformation'):
         instance = E.Sequential([
             E.TimeReverse(always_apply=True),
             object(),
@@ -20,7 +20,7 @@ def test_Sequential_CASE_create_AND_subtype_error():
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_no_transfroms():
-    input = np.random.uniform(size=(5000, 12))
+    input = np.random.randn(5000, 12)
 
     instance = E.Sequential([
     ], always_apply=True)
@@ -31,7 +31,7 @@ def test_Sequential_CASE_call_AND_no_transfroms():
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_one_flip():
-    input = np.random.uniform(size=(5000, 12))
+    input = np.random.randn(5000, 12)
 
     instance = E.Sequential([
         E.TimeReverse(always_apply=True),
@@ -43,7 +43,7 @@ def test_Sequential_CASE_call_AND_one_flip():
 
 @pytest.mark.core
 def test_Sequential_CASE_call_AND_double_flip():
-    input = np.random.uniform(size=(5000, 12))
+    input = np.random.randn(5000, 12)
 
     instance = E.Sequential([
         E.TimeReverse(always_apply=True),
@@ -56,7 +56,7 @@ def test_Sequential_CASE_call_AND_double_flip():
 
 @pytest.mark.core
 def test_OneOf_CASE_call_AND_no_transfroms():
-    input = np.random.uniform(size=(5000, 12))
+    input = np.random.randn(5000, 12)
 
     instance = E.OneOf([
     ], always_apply=True)
@@ -67,7 +67,7 @@ def test_OneOf_CASE_call_AND_no_transfroms():
 
 @pytest.mark.core
 def test_OneOf_CASE_call_AND_check_application():
-    input = np.random.uniform(size=(5000, 12))
+    input = np.random.randn(5000, 12)
 
     instance = E.Sequential([
         E.TimeReverse(always_apply=True),

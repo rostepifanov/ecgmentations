@@ -1,4 +1,4 @@
-from ecgmentations.augmentations.filter.transforms import (
+from ecgmentations.augmentations.filter.transformations import (
     LowPassFilter,
     HighPassFilter,
     BandPassFilter,

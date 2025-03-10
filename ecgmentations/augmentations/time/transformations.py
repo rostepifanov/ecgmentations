@@ -5,9 +5,9 @@ import ecgmentations.core.constants as C
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.time.functional as F
 
-from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
+from ecgmentations.core.augmentation import EcgOnlyAugmentation, DualAugmentation
 
-class TimeReverse(DualTransform):
+class TimeReverse(DualAugmentation):
     """Reverse the input ecg.
     """
     def apply(self, ecg, **params):
@@ -16,7 +16,7 @@ class TimeReverse(DualTransform):
     def get_transform_init_args_names(self):
         return tuple()
 
-class TimeShift(DualTransform):
+class TimeShift(DualAugmentation):
     """Shift the input ecg along time axis.
     """
     def __init__(
@@ -61,7 +61,7 @@ class TimeShift(DualTransform):
     def get_transform_init_args_names(self):
         return ('shift_limit', 'border_mode', 'fill_value', 'mask_fill_value')
 
-class TimeSegmentShuffle(DualTransform):
+class TimeSegmentShuffle(DualAugmentation):
     """Randomly shuffle of the input ecg segments
     """
     def __init__(
@@ -91,7 +91,7 @@ class TimeSegmentShuffle(DualTransform):
     def get_transform_init_args_names(self):
         return ('num_segments', )
 
-class RandomTimeWrap(DualTransform):
+class RandomTimeWrap(DualAugmentation):
     """Randomly stretch and squeeze contiguous segments of the input ecg
     """
     def __init__(
@@ -131,7 +131,7 @@ class RandomTimeWrap(DualTransform):
     def get_transform_init_args_names(self):
         return ('num_steps', 'wrap_limit')
 
-class TimeCutout(DualTransform):
+class TimeCutout(DualAugmentation):
     """Randomly cutout time ranges in the input ecg.
     """
     def __init__(
@@ -198,7 +198,7 @@ class TimeCutout(DualTransform):
     def get_transform_init_args_names(self):
         return ('num_ranges', 'length_range', 'fill_value', 'mask_fill_value')
 
-class TimeCrop(DualTransform):
+class TimeCrop(DualAugmentation):
     """Crop time segment from the input ecg.
     """
     def __init__(
@@ -276,7 +276,7 @@ class RandomTimeCrop(TimeCrop):
     def get_transform_init_args_names(self):
         return ('length', )
 
-class TimePadIfNeeded(DualTransform):
+class TimePadIfNeeded(DualAugmentation):
     """Pad lenght of the ecg to the minimal length.
     """
     def __init__(
@@ -344,7 +344,7 @@ class TimePadIfNeeded(DualTransform):
     def get_transform_init_args_names(self):
         return ('min_length', 'position', 'border_mode', 'fill_value', 'mask_fill_value')
 
-class Pooling(EcgOnlyTransform):
+class Pooling(EcgOnlyAugmentation):
     """Reduce resolution of time axis of the input ecg
     """
     def __init__(

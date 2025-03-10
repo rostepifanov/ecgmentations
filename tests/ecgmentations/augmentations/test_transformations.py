@@ -69,7 +69,7 @@ def test_Transform_CASE_call_AND_mono_channel(transform):
     assert tmask.dtype == mask.dtype
     assert tmask.shape == mask.shape
 
-    if isinstance(transform, E.EcgOnlyTransform):
+    if isinstance(transform, E.EcgOnlyAugmentation):
         assert np.all(tmask == mask)
 
 @pytest.mark.parametrize('transform', SHAPE_PRESERVED_TRANSFORMS)
@@ -94,5 +94,5 @@ def test_Transform_CASE_call_AND_multi_channel(transform):
     assert tmask.dtype == mask.dtype
     assert tmask.shape == mask.shape
 
-    if isinstance(transform, E.EcgOnlyTransform):
+    if isinstance(transform, E.EcgOnlyAugmentation):
         assert np.all(tmask == mask)

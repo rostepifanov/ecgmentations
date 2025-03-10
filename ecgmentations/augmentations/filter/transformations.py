@@ -1,9 +1,9 @@
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.filter.functional as F
 
-from ecgmentations.core.transforms import EcgOnlyTransform
+from ecgmentations.core.augmentation import EcgOnlyAugmentation
 
-class LowPassFilter(EcgOnlyTransform):
+class LowPassFilter(EcgOnlyAugmentation):
     """Apply low-pass filter to the input ecg.
     """
     def __init__(
@@ -35,7 +35,7 @@ class LowPassFilter(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('ecg_frequency', 'cutoff_frequency')
 
-class HighPassFilter(EcgOnlyTransform):
+class HighPassFilter(EcgOnlyAugmentation):
     """Apply high-pass filter to the input ecg.
     """
     def __init__(
@@ -67,7 +67,7 @@ class HighPassFilter(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('ecg_frequency', 'cutoff_frequency')
 
-class BandPassFilter(EcgOnlyTransform):
+class BandPassFilter(EcgOnlyAugmentation):
     """Apply band-pass filter to the input ecg.
     """
     def __init__(
@@ -99,7 +99,7 @@ class BandPassFilter(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('ecg_frequency', 'cutoff_frequencies')
 
-class SigmoidCompression(EcgOnlyTransform):
+class SigmoidCompression(EcgOnlyAugmentation):
     """Apply sigmoid compression to the input ecg.
     """
     def __init__(

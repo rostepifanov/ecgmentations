@@ -61,19 +61,19 @@ The list of time axis transforms:
 - [TimeSegmentShuffle]()
 - [RandomTimeWrap]()
 - [TimeCutout]()
-- [Blur]()
-- [Pooling]()
 - [TimeCrop]()
 - [CenterTimeCrop]()
 - [RandomTimeCrop]()
 - [TimePadIfNeeded]()
+- [Pooling]()
+- [Blur]()
 
 The list of pulse transforms:
 
 - [SinePulse]()
-- [SquarePulse]()
 - [PowerlineNoise]()
 - [RespirationNoise]()
+- [SquarePulse]()
 
 The list of filter transforms:
 

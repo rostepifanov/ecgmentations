@@ -1,10 +1,10 @@
 import cv2
 import numpy as np
 
-from ecgmentations.core.application import Apply
+from ecgmentations.core.transformation import Transformation
 from ecgmentations.core.utils import format_args
 
-class Transform(Apply):
+class Augmentation(Transformation):
     """Root class for single augmentations
     """
     def __init__(self, always_apply=False, p=0.5):
@@ -15,7 +15,7 @@ class Transform(Apply):
                 p: float
                     the probability of application
         """
-        super(Transform, self).__init__(always_apply, p)
+        super(Augmentation, self).__init__(always_apply, p)
 
     def __call__(self, *args, force_apply=False, **data):
         """
@@ -107,8 +107,8 @@ class Transform(Apply):
     def get_transform_init_args(self):
         return {k: getattr(self, k) for k in self.get_transform_init_args_names()}
 
-class EcgOnlyTransform(Transform):
-    """Transform applied to ecg only
+class EcgOnlyAugmentation(Augmentation):
+    """Augmentation applied to ecg only
     """
     def apply(self, ecg, **params):
         raise NotImplementedError
@@ -117,8 +117,8 @@ class EcgOnlyTransform(Transform):
     def targets(self):
         return { 'ecg': self.apply }
 
-class DualTransform(Transform):
-    """Transform for segmentation task
+class DualAugmentation(Augmentation):
+    """Augmentation for segmentation task
     """
     @property
     def targets(self):
@@ -130,7 +130,7 @@ class DualTransform(Transform):
     def apply_to_mask(self, mask, **params):
         return self.apply(mask, **{k: cv2.INTER_NEAREST if k == 'interpolation' else v for k, v in params.items()})
 
-class Identity(DualTransform):
+class Identity(DualAugmentation):
     """Identity transform
     """
     def apply(self, ecg, **params):

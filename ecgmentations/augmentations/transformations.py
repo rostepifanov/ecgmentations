@@ -6,9 +6,9 @@ import ecgmentations.core.constants as C
 import ecgmentations.augmentations.misc as M
 import ecgmentations.augmentations.functional as F
 
-from ecgmentations.core.transforms import EcgOnlyTransform, DualTransform
+from ecgmentations.core.augmentation import EcgOnlyAugmentation, DualAugmentation
 
-class AmplitudeInvert(EcgOnlyTransform):
+class AmplitudeInvert(EcgOnlyAugmentation):
     """Invert the input ecg.
     """
     def apply(self, ecg, **params):
@@ -17,7 +17,7 @@ class AmplitudeInvert(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return tuple()
 
-class ChannelShuffle(EcgOnlyTransform):
+class ChannelShuffle(EcgOnlyAugmentation):
     """Randomly rearrange channels of the input ecg.
     """
     def apply(self, ecg, channel_order, **params):
@@ -39,7 +39,7 @@ class ChannelShuffle(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ()
 
-class ChannelDropout(EcgOnlyTransform):
+class ChannelDropout(EcgOnlyAugmentation):
     """Randomly drop channels in the input ecg.
     """
     def __init__(
@@ -92,7 +92,7 @@ class ChannelDropout(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('channel_drop_range', 'fill_value')
 
-class GaussNoise(EcgOnlyTransform):
+class GaussNoise(EcgOnlyAugmentation):
     """Randomly add gaussian noise to the input ecg.
     """
     def __init__(
@@ -143,7 +143,7 @@ class GaussNoise(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('mean', 'variance', 'per_channel')
 
-class GaussBlur(EcgOnlyTransform):
+class GaussBlur(EcgOnlyAugmentation):
     """Blur by gaussian the input ecg.
     """
     def __init__(
@@ -192,7 +192,7 @@ class GaussBlur(EcgOnlyTransform):
     def get_transform_init_args_names(self):
         return ('variance', 'kernel_size_range')
 
-class AmplitudeScale(EcgOnlyTransform):
+class AmplitudeScale(EcgOnlyAugmentation):
     """Scale amplitude of the input ecg.
     """
     def __init__(
